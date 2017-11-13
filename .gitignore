@@ -2,9 +2,8 @@
 node_modules
 npm-debug.log
 .idea/*
-Thumbs.db
-coverage/
-.project
-build/
 *.sw*
 *.un~
+.deploy_git/
+public/
+*.log
