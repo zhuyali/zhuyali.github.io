@@ -110,9 +110,9 @@ tags:
   ```
 
 ## 运行过程
-1. 格式化NameNode
+1. 格式化NameNode，仅在第一次启动Hadoop时运行该命令
   ```
-  $ bin/hdfs namenode-format
+  $ bin/hdfs namenode -format
   ```
 
 2. 启动HDFS
@@ -155,3 +155,16 @@ tags:
   ```
   $ hadoop fs -cat /output/par*
   ```
+
+## 遇到的问题
+有时候会遇到执行 `jps` 后，发现 datanode 没有启动的问题。一种可能的解决方案为：
+```进入到存放HDFS元信息的文件夹中
+$ cd /Users/zhuyali/prjs/hadoop/hdfs/name/current
+```
+然后将该目录下 VERSION 文件中的 clusterId 复制到
+```
+$ cd /Users/zhuyali/prjs/hadoop/hdfs/data/current
+```
+该文件夹下的 VERSION 文件中的 clusterId 处
+
+出现该问题的原因是：在第一次格式化 dfs 后，启动并使用了 hadoop，后来又重新执行了格式化命令(hdfs namenode -format)，这时 namenode 的 clusterID 会重新生成，而 datanode 的 clusterID 保持不变。
