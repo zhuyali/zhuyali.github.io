@@ -101,7 +101,7 @@ HTML代码如下：
 HTML代码如下：
 ```
 <div class="parent">
-  <div class="child">child</div>
+  <span class="child">child</span>
 </div>
 ```
 
