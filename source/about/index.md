@@ -52,7 +52,7 @@ date: 2018-01-07 19:19:27
 
 - #### 组件类
 
-<div class="works"><div class="work"><img class="icon" style="display: inline!important;" src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1515343144597&di=a1b3eb4811563e8f64117498d9b502c3&imgtype=0&src=http%3A%2F%2Fbpic.588ku.com%2Felement_origin_min_pic%2F19%2F03%2F20%2F1656ece7cf410a9.jpg" /><div class="intro"><a class="title" href="https://zhuyali.github.io/d3-tree/">d3-tree</a><div class="brief">用于树状结构的生成，可带有图片和文字，国内 Macaca 团队使用该组件进行测试报告展示。</div></div></div></div>
+<div class="works"><div class="work"><img class="icon" style="display: inline!important;" src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1515343144597&di=a1b3eb4811563e8f64117498d9b502c3&imgtype=0&src=http%3A%2F%2Fbpic.588ku.com%2Felement_origin_min_pic%2F19%2F03%2F20%2F1656ece7cf410a9.jpg" /><div class="intro"><a class="title" href="https://zhuyali.github.io/d3-tree/">d3-tree</a><div class="brief">用于树状结构的生成，可带有图片和文字。该组件被 Macaca Reporter 项目使用。</div></div></div></div>
 
 - #### 文档类
 
