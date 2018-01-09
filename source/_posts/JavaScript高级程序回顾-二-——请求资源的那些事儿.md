@@ -21,7 +21,7 @@ xhr.send(null);//发送请求
 ```
 function ajax(options) {
   options = options || {};
-  options.type = (options.type || "GET").toUpperCase();
+  options.type = (options.type || 'GET').toUpperCase();
   var params = formatParams(options.data);
   var xhr = new XMLHttpRequest();
   xhr.onreadystatechange = function() {
@@ -36,7 +36,7 @@ function ajax(options) {
     xhr.send(null);
   } else if (options.type === 'POST') {
     xhr.open('post', options.url, true);
-    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");//模仿表单提交
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');//模仿表单提交
     xhr.send(params);
   }
 }
@@ -53,9 +53,9 @@ function formatParams(data) {
 　　调用方式为：
 ```
 ajax({
-  url: "/test",
-  type: "POST",
-  data: { name: "Julia", age: 23 },
+  url: '/test',
+  type: 'POST',
+  data: { name: 'Julia', age: 23 },
   success: function (responseText, responseXML) {
     //此处放成功后执行的代码
   },
