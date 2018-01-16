@@ -148,7 +148,7 @@ tags:
 
 3. 运行Wordcount程序
   ```
-  $ hadoop jar hadoop-mapreduce-examples.jar wordcount /input /output
+  $ hadoop jar hadoop-mapreduce-examples-2.7.3.jar wordcount /input /output
   ```
 
 4. 查看结果
