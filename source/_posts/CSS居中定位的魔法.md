@@ -96,8 +96,6 @@ HTML代码如下：
 
 #### inline 或者 inline-* 元素
 
-将元素的行高设置为与父元素的高度一致。原理是 lineheight - fontsize 能够得到行间距，行间距会分为两半分别应用到内容区的顶部和底部，从而使得元素居中。
-
 HTML代码如下：
 ```
 <div class="parent">
@@ -105,18 +103,32 @@ HTML代码如下：
 </div>
 ```
 
-CSS代码如下：
-```
-.parent {
-  width: 100px;
-  height: 100px;
-  background: red;
-  
-}
-.child {
-  line-height: 100px;
-}
-```
+- 使用 line-height 属性
+
+  将元素的行高设置为与父元素的高度一致。原理是 lineheight - fontsize 能够得到行间距，行间距会分为两半分别应用到内容区的顶部和底部，从而使得元素居中。
+
+  CSS代码如下：
+  ```
+  .parent {
+    width: 100px;
+    height: 100px;  
+  }
+  .child {
+    line-height: 100px;
+  }
+  ```
+
+- 使用 vertical-align 属性
+
+  CSS代码如下：
+  ```
+  .parent {
+    width: 100px;
+    height: 100px;
+    display: table-cell;
+    vertical-align: middle;
+  }
+  ```
 
 #### 块级元素
 

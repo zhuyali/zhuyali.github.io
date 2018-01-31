@@ -25,7 +25,7 @@ function ajax(options) {
   var params = formatParams(options.data);
   var xhr = new XMLHttpRequest();
   xhr.onreadystatechange = function() {
-    if (xhr.status >= 200 && xhr.status < 300 || xhr.status === 304) {
+    if (xhr.readyState === 4 && xhr.status >= 200 && xhr.status < 300 || xhr.status === 304) {
       options.success && options.success(xhr.responseText, xhr.responseXML);
     } else {
       options.fail && options.fail(status);
