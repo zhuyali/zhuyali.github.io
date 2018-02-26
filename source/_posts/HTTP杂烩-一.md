@@ -5,7 +5,7 @@ tags:
 ---
 
 ### 写在前面
-　　![](https://img3.doubanio.com/view/ark_works_pic/common-largeshow/public/199874044.jpg)
+　　![](//wx4.sinaimg.cn/mw690/79b5b053ly1fodjnqkm0kj20fq08u0ta.jpg)
 　　当我们在浏览器的地址栏里输入 URL 时，信息会被送往某处，然后从某处得到回复，最终将内容呈现在 Web 页面上。Web 使用一种名为 HTTP(HyperText Transfer Protocol，超文本传输协议) 的协议作为规范，完成客户端到服务端的一系列运作流程。
 
 ### 网络基础 TCP/IP
@@ -31,7 +31,7 @@ tags:
 
 #### DNS（域名服务）
 　　计算机可以被赋予 IP 地址，也可以被赋予主机名和域名。相较前者来说，用户更喜欢后者，毕竟没有人喜欢记一组长长的数字。DNS 服务应运而生，DNS 协议提供通过域名查找 IP 地址，或逆向从 IP 地址反查域名的服务。
-　　![](https://img3.doubanio.com/view/ark_works_pic/common-largeshow/public/199875493.jpg)
+　　![](//wx2.sinaimg.cn/mw690/79b5b053ly1fodjnqkmsmj20fq0a8t9e.jpg)
 　　一些碎碎念：DNS 解析的时候，既会用到 TCP 协议也会用到 UDP 协议。DNS 的规范规定了两种类型的 DNS 服务器：主 DNS 服务器和从 DNS 服务器。当从域名服务器启动后，需要与主域名服务器通信并加载数据信息，这被称为区传送。后续从域名服务器也会定时向主域名服务器进行查询以便了解数据变动，如有变动，就会执行区传送。区传送主要使用 TCP 协议，主要基于以下两点考虑：第一点是区传送的数据传输的信息量很大；二是该传输需要可靠。而域名解析时会使用 UDP 协议，主要是因为客户端查询域名时，服务器返回的信息量很小，同时，使用 UDP 无需三次握手，可以降低域名服务器的负载。
 
 ### HTTP 中的数据
