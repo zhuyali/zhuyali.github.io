@@ -80,6 +80,6 @@ CSS 代码如下：
    ```
    与上面的方案类似，该元素不过是拿 ::after 伪元素替代了`<div class="clearfloat"></div>`。这里需要注意的一点是伪元素默认是行内元素，所以这里通过 display 属性将其改为块级元素。
 
-### 参考文献
+### 参考资料
 1. [详说清除浮动](http://kayosite.com/remove-floating-style-in-detail.html)
 2. [常规流之块级格式化上下文（Block Formatting Contexts）](https://www.cnblogs.com/rexD/p/4597380.html)
