@@ -18,19 +18,19 @@ M-Model，V-View，C-Controller 分别代表 模型-视图-控制器。
 
 早期的 MVC 模式如图：
 
-![](http://image.beekka.com/blog/2015/bg2015020105.png)
+![](http://www.ruanyifeng.com/blogimg/asset/2015/bg2015020105.png)
 
 ### 什么是 MVP?
 
 MVP 是 MVC 的一个变种。从上面的图中我们可以看出，在 MVC 中，Model 不依赖于 View，但是 View 是依赖于 Model 的，切断 Model 与 View 的联系，能够使得三者的关系更加清晰，职责也更加单一，因而这里对 Controller 做了改进。Controller 全权负责 Model 与 View 之间的通信而无需它们之间单独通信：Controller 将消息传递给 Model，Model 处理完数据后将数据的变化通知给 Controller，再由Controller 来通知 View 来变化视图，简单来说，它们之间的关系为  View <-> Controller <-> Model，以上说的 Controller 就是 MVP 中的 P-Presenter。这好像才是平时我熟悉的 MVC 模式，如图：
 
-![](http://image.beekka.com/blog/2015/bg2015020109.png)
+![](http://www.ruanyifeng.com/blogimg/asset/2015/bg2015020109.png)
 
 ### 什么是 MVVM?
 
 MVVM 也是 MVC 的一个变种。MVP 中的 P 封装了 Model 和 View 之间的所有通信，那么能不能把这个通信自动化？也就是说，当 Model 变化 时，View 能够识别变化做出相应改变；当 View 变化时，Model 也能够识别变化做出相应改变。MVVM 就解决了这个问题。MVVM 与 MVP 十分相似，除了你需要为 View 量身定制一个 model，这个 model 就是 ViewModel，它实现了 Model 与 View 之间的双向数据绑定，从而能够达到 View 与 Model 之间的自动双向同步。MVVM 结构与 MVP 类似：
 
-![](http://images.cnitblog.com/i/380707/201403/152139487613221.png)
+![](http://www.ruanyifeng.com/blogimg/asset/2015/bg2015020110.png)
 
 
 ### 参考文献：
