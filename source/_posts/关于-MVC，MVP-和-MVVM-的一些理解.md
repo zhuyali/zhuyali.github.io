@@ -33,7 +33,7 @@ MVVM 也是 MVC 的一个变种。MVP 中的 P 封装了 Model 和 View 之间�
 ![](http://www.ruanyifeng.com/blogimg/asset/2015/bg2015020110.png)
 
 
-### 参考文献：
+### 参考资料
 1. [MVC，MVP 和 MVVM 的图示 - 阮一峰](http://www.ruanyifeng.com/blog/2015/02/mvcmvp_mvvm.html)
 2. [从 Script 到 Code Blocks、Code Behind 到 MVC、MVP、MVVM](http://www.cnblogs.com/indream/p/3602348.html)
 3. [mvc、mvp、mvvm的架构简单解读](https://zhuanlan.zhihu.com/p/26287306)
