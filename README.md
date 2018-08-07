@@ -2,6 +2,7 @@
 ===
 
 ## JS 系列
+#### - [浏览器和Node中不同的Event Loop](https://zhuyali.com.cn/2018/08/02/%E6%B5%8F%E8%A7%88%E5%99%A8%E5%92%8CNode%E4%B8%AD%E4%B8%8D%E5%90%8C%E7%9A%84Event-Loop/)
 #### - [移动端小白的flexible.js学习笔记](https://zhuyali.com.cn/2018/06/22/flexible-js%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/)
 #### - [JS设计模式-创建型模式](https://zhuyali.com.cn/2018/04/25/JS%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%88%9B%E5%BB%BA%E5%9E%8B%E6%A8%A1%E5%BC%8F/)
 #### - [Promise的一些尝试](https://zhuyali.com.cn/2018/03/05/Promise%E7%9A%84%E4%B8%80%E4%BA%9B%E5%B0%9D%E8%AF%95/)
