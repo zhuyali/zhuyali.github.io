@@ -31,5 +31,6 @@
 #### - [underscore(1.9.0)源码阅读系列-从分组函数领略闭包之美](https://zhuyali.com.cn/2018/05/22/underscore%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB%E7%B3%BB%E5%88%97-%E4%BB%8E%E5%88%86%E7%BB%84%E5%87%BD%E6%95%B0%E9%A2%86%E7%95%A5%E9%97%AD%E5%8C%85%E4%B9%8B%E7%BE%8E/)
 
 ## 其它
+#### - [记-2018秋招腾讯面试经历（未完待续）](https://zhuyali.com.cn/2018/08/15/%E8%AE%B0-2018%E7%A7%8B%E6%8B%9B%E8%85%BE%E8%AE%AF%E9%9D%A2%E8%AF%95%E7%BB%8F%E5%8E%86/)
 #### - [Mac下的Hadoop2.7.3环境配置](https://zhuyali.com.cn/2017/12/19/Mac%E4%B8%8B%E7%9A%84Hadoop2-7-3%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE/)
 #### - [关于 MVC，MVP 和 MVVM 的一些理解](https://zhuyali.com.cn/2017/11/27/%E5%85%B3%E4%BA%8E-MVC%EF%BC%8CMVP-%E5%92%8C-MVVM-%E7%9A%84%E4%B8%80%E4%BA%9B%E7%90%86%E8%A7%A3/)
