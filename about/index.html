@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222"/>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2"/>
+
+<link rel="stylesheet" href="/css/main.css?v=7.0.0"/>
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.0.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.0.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '7.0.0',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false,"dimmer":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="关于博主一名具有文艺梦的程序猿，还是学生党，未来希望成为一名前端工作者~ 关于博客记录一些学习过程中的想法，分享一些学习心得~ 联系方式 Github: https://github.com/zhuyali 微博: @一只大阿瓜  推荐书单 JavaScript 高级程序设计（第3版）- 这本书可以涵盖基础到高级技巧，无论是温故或者学习，这本书都是不错的选择 你不知道的 JavaScript（上卷">
+<meta property="og:type" content="website">
+<meta property="og:title" content="一只大阿瓜の博客">
+<meta property="og:url" content="https://zhuyali.github.io/about/index.html">
+<meta property="og:site_name" content="一只大阿瓜の博客">
+<meta property="og:description" content="关于博主一名具有文艺梦的程序猿，还是学生党，未来希望成为一名前端工作者~ 关于博客记录一些学习过程中的想法，分享一些学习心得~ 联系方式 Github: https://github.com/zhuyali 微博: @一只大阿瓜  推荐书单 JavaScript 高级程序设计（第3版）- 这本书可以涵盖基础到高级技巧，无论是温故或者学习，这本书都是不错的选择 你不知道的 JavaScript（上卷">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://avatars1.githubusercontent.com/u/28126942?s=200&v=4">
+<meta property="og:image" content="https://avatars2.githubusercontent.com/u/9766938?s=200&v=4">
+<meta property="og:image" content="http://img1.imgtn.bdimg.com/it/u=256148739,105884542&fm=27&gp=0.jpg">
+<meta property="og:image" content="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1515342177506&di=e9ed8180b3301d6b23e6668275bd4fa8&imgtype=0&src=http%3A%2F%2Fimg.25pp.com%2Fuploadfile%2Fsoft%2Fimages%2F2014%2F0910%2F20140910113414610.jpg">
+<meta property="og:image" content="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1515342648992&di=bec0e85fd3b55e2ceb8a99ba04174e97&imgtype=0&src=http%3A%2F%2Fis5.mzstatic.com%2Fimage%2Fthumb%2FPurple122%2Fv4%2F34%2F95%2F80%2F34958089-1d33-a766-84f8-f060a85728ca%2Fsource%2F512x512bb.jpg">
+<meta property="og:image" content="https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=554385299,1198250608&fm=27&gp=0.jpg">
+<meta property="og:image" content="https://gss2.bdstatic.com/9fo3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=2f5258703301213fcf3349da6cdc51ec/8b82b9014a90f603d1cff0ee3312b31bb051ed18.jpg">
+<meta property="og:image" content="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1515343144597&di=a1b3eb4811563e8f64117498d9b502c3&imgtype=0&src=http%3A%2F%2Fbpic.588ku.com%2Felement_origin_min_pic%2F19%2F03%2F20%2F1656ece7cf410a9.jpg">
+<meta property="og:image" content="https://avatars1.githubusercontent.com/u/1562726?s=200&v=4">
+<meta property="og:updated_time" content="2019-02-27T09:35:48.915Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="一只大阿瓜の博客">
+<meta name="twitter:description" content="关于博主一名具有文艺梦的程序猿，还是学生党，未来希望成为一名前端工作者~ 关于博客记录一些学习过程中的想法，分享一些学习心得~ 联系方式 Github: https://github.com/zhuyali 微博: @一只大阿瓜  推荐书单 JavaScript 高级程序设计（第3版）- 这本书可以涵盖基础到高级技巧，无论是温故或者学习，这本书都是不错的选择 你不知道的 JavaScript（上卷">
+<meta name="twitter:image" content="https://avatars1.githubusercontent.com/u/28126942?s=200&v=4">
+
+
+
+
+
+
+  <link rel="canonical" href="https://zhuyali.github.io/about/"/>
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title> | 一只大阿瓜の博客</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">一只大阿瓜の博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br/>Home</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br/>Archives</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about menu-item-active">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br/>About</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+    
+    
+      
+      
+    
+      
+      
+    
+      
+      
+    
+    
+
+  
+
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+    
+    
+    <div class="post-block page">
+      <header class="post-header">
+
+<h1 class="post-title" itemprop="name headline">
+
+</h1>
+
+<div class="post-meta">
+  
+  
+
+
+
+</div>
+
+</header>
+
+      
+      
+      
+      <div class="post-body">
+        
+        
+          <h2 id="关于博主"><a href="#关于博主" class="headerlink" title="关于博主"></a>关于博主</h2><p>一名具有文艺梦的程序猿，还是学生党，未来希望成为一名前端工作者~</p>
+<h2 id="关于博客"><a href="#关于博客" class="headerlink" title="关于博客"></a>关于博客</h2><p>记录一些学习过程中的想法，分享一些学习心得~</p>
+<h2 id="联系方式"><a href="#联系方式" class="headerlink" title="联系方式"></a>联系方式</h2><ul>
+<li>Github: <a href="https://github.com/zhuyali" target="_blank" rel="noopener">https://github.com/zhuyali</a></li>
+<li>微博: @一只大阿瓜</li>
+</ul>
+<h2 id="推荐书单"><a href="#推荐书单" class="headerlink" title="推荐书单"></a>推荐书单</h2><ul>
+<li>JavaScript 高级程序设计（第3版）- 这本书可以涵盖基础到高级技巧，无论是温故或者学习，这本书都是不错的选择</li>
+<li>你不知道的 JavaScript（上卷）- 上卷中对于作用域和闭包的讲解很深刻，循序渐进的让你体会到闭包的精髓</li>
+<li>CSS 世界 - 初看该书时觉得文笔浮夸，越是读的深入，却越能体会到张鑫旭大大是如何把 CSS 玩弄于手掌之中，通过本书可以让你理解 CSS 世界中许多看似 Bug 的特性，也能让你在写 CSS 的时候，更加清楚明白它在整个文档流中所处的地位和带来的作用</li>
+<li>深入浅出 Node.js - 这本书是朴灵大大的 Node 之作，第一遍看的时候会发现很多东西并不很明白，但是好书总是值得反复阅读的，随着实践经验的积累，回过头来再去看这本书，都会有新的认知和感想</li>
+</ul>
+<p>…（待博主看到优秀的书，会不断向下补充的）</p>
+<h2 id="作品集"><a href="#作品集" class="headerlink" title="作品集"></a>作品集</h2><ul>
+<li><h4 id="应用类"><a href="#应用类" class="headerlink" title="应用类"></a>应用类</h4></li>
+</ul>
+<style>
+  .icon {
+    width: 150px;
+    height: 150px;
+    border-radius: 100%;
+  }
+  .work {
+    float: left;
+    width: 450px;
+    padding-top: 15px;
+  }
+  .intro {
+    display: inline-block;
+    width: 250px;
+    padding-left: 20px;
+    vertical-align: top;
+  }
+  .works {
+    overflow: hidden;
+  }
+  .title {
+    color: #0366d6;
+    text-decoration: none;
+    border: none;
+    font-size: 22px;
+    font-weight: 600;
+  }
+  .title:hover {
+    color: #0366d6;
+    text-decoration: underline;
+  }
+</style>
+
+<div class="works"><div class="work"><img class="icon" style="display: inline!important;" src="https://avatars1.githubusercontent.com/u/28126942?s=200&v=4"><div class="intro"><a class="title" href="https://github.com/open-catlog" target="_blank" rel="noopener">open-catlog</a><div class="brief">一款使用 koa+mongo+react 搭建的监控系统，主要针对PV，UV，Tomcat，Nginx，MySQL还有一些操作系统基本信息进行监控。</div></div></div><div class="work"><img class="icon" style="display: inline!important;" src="https://avatars2.githubusercontent.com/u/9766938?s=200&v=4"><div class="intro"><a class="title">feedit</a><div class="brief">一款个人订阅系统。包含四个模块：<a href="https://github.com/zhuyali/feedit_chrome" target="_blank" rel="noopener">Chrome插件</a>，<a href="https://github.com/zhuyali/Feedit_android" target="_blank" rel="noopener">Android端</a>，<a href="https://github.com/zhuyali/feedit_iOS" target="_blank" rel="noopener">iOS端</a>，<a href="https://github.com/zhuyali/feedit" target="_blank" rel="noopener">服务端</a>。</div></div></div><div class="work"><img class="icon" style="display: inline!important;" src="http://img1.imgtn.bdimg.com/it/u=256148739,105884542&fm=27&gp=0.jpg"><div class="intro"><a class="title" href="https://zhuyali.github.io/imusic/">imusic</a><div class="brief">一款本地音乐播放器，还有对应的<a href="https://github.com/zhuyali/imusic-react" target="_blank" rel="noopener"> React 版本</a>和<a href="https://github.com/zhuyali/imusic-vue" target="_blank" rel="noopener"> Vue 版本</a>。</div></div></div><div class="work"><img class="icon" style="display: inline!important;" src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1515342177506&di=e9ed8180b3301d6b23e6668275bd4fa8&imgtype=0&src=http%3A%2F%2Fimg.25pp.com%2Fuploadfile%2Fsoft%2Fimages%2F2014%2F0910%2F20140910113414610.jpg"><div class="intro"><a class="title" href="https://zhuyali.github.io/todoList/">todoList</a><div class="brief">习惯记 todoList 的福音，可以帮助我合理规划时间。</div></div></div><div class="work"><img class="icon" style="display: inline!important;" src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1515342648992&di=bec0e85fd3b55e2ceb8a99ba04174e97&imgtype=0&src=http%3A%2F%2Fis5.mzstatic.com%2Fimage%2Fthumb%2FPurple122%2Fv4%2F34%2F95%2F80%2F34958089-1d33-a766-84f8-f060a85728ca%2Fsource%2F512x512bb.jpg"><div class="intro"><a class="title" href="https://zhuyali.github.io/training/snake/index.html">贪吃蛇</a><div class="brief">在线版贪吃蛇游戏，可以自定义地图大小哦~</div></div></div><div class="work"><img class="icon" style="display: inline!important;" src="https://ss3.bdstatic.com/70cFv8Sh_Q1YnxGkpoWK1HF6hhy/it/u=554385299,1198250608&fm=27&gp=0.jpg"><div class="intro"><a class="title" href="https://zhuyali.com.cn/Cellular-Automation/" target="_blank" rel="noopener">细胞自动机</a><div class="brief">在线版细胞自动机，难度虽然不大，不过还是蛮好玩的~</div></div></div><div class="work"><img class="icon" style="display: inline!important;" src="https://gss2.bdstatic.com/9fo3dSag_xI4khGkpoWK1HF6hhy/baike/w%3D268%3Bg%3D0/sign=2f5258703301213fcf3349da6cdc51ec/8b82b9014a90f603d1cff0ee3312b31bb051ed18.jpg"><div class="intro"><a class="title" href="http://zhuyali.com.cn/cloud-music/" target="_blank" rel="noopener">仿网易云音乐</a><div class="brief">使用 React 搭建的网易云音乐移动端低配版本，不过听听歌还是支持的哦~</div></div></div></div>
+
+<ul>
+<li><h4 id="组件类"><a href="#组件类" class="headerlink" title="组件类"></a>组件类</h4></li>
+</ul>
+<div class="works"><div class="work"><img class="icon" style="display: inline!important;" src="https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1515343144597&di=a1b3eb4811563e8f64117498d9b502c3&imgtype=0&src=http%3A%2F%2Fbpic.588ku.com%2Felement_origin_min_pic%2F19%2F03%2F20%2F1656ece7cf410a9.jpg"><div class="intro"><a class="title" href="https://zhuyali.github.io/d3-tree/">d3-tree</a><div class="brief">用于树状结构的生成，可带有图片和文字。该组件被 Macaca Reporter 项目使用。</div></div></div></div>
+
+<ul>
+<li><h4 id="文档类"><a href="#文档类" class="headerlink" title="文档类"></a>文档类</h4></li>
+</ul>
+<div class="works"><div class="work"><img class="icon" style="display: inline!important;" src="https://avatars1.githubusercontent.com/u/1562726?s=200&v=4"><div class="intro"><a class="title" href="https://zhuyali.github.io/d3-doc/">d3-doc</a><div class="brief">d3.js文档翻译，可视化工作者可以借鉴参考，主要是业余时间进行翻译，未完待续~</div></div></div></div>
+
+        
+      </div>
+      
+      
+      
+    </div>
+    
+
+
+
+    
+    
+    
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Author</p>
+              <p class="site-description motion-element" itemprop="description">Talk is cheap, show me the code.</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">25</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/zhuyali" title="GitHub &rarr; https://github.com/zhuyali" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#关于博主"><span class="nav-number">1.</span> <span class="nav-text">关于博主</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#关于博客"><span class="nav-number">2.</span> <span class="nav-text">关于博客</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#联系方式"><span class="nav-number">3.</span> <span class="nav-text">联系方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#推荐书单"><span class="nav-number">4.</span> <span class="nav-text">推荐书单</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#作品集"><span class="nav-number">5.</span> <span class="nav-text">作品集</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#应用类"><span class="nav-number">5.0.1.</span> <span class="nav-text">应用类</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#组件类"><span class="nav-number">5.0.2.</span> <span class="nav-text">组件类</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#文档类"><span class="nav-number">5.0.3.</span> <span class="nav-text">文档类</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Author</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v7.0.0</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="Total Visitors">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="Total Views">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=7.0.0"></script>
+
+  <script src="/js/src/motion.js?v=7.0.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/schemes/muse.js?v=7.0.0"></script>
+
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=7.0.0"></script>
+<script src="/js/src/post-details.js?v=7.0.0"></script>
+
+
+
+  
+
+
+  <script src="/js/src/bootstrap.js?v=7.0.0"></script>
+
+
+  
+  
+  
+  <script id="dsq-count-scr" src="https://zhuyali.disqus.com/count.js" async></script>
+
+
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://zhuyali.github.io/about/index.html";
+    this.page.identifier = "about/index.html";
+    this.page.title = '';
+    };
+  function loadComments() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://zhuyali.disqus.com/embed.js';
+    s.setAttribute('data-timestamp', '' + +new Date());
+    (d.head || d.body).appendChild(s);
+  }
+  
+    loadComments();
+  
+</script>
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

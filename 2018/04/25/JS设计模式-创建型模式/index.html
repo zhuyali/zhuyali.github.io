@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222"/>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2"/>
+
+<link rel="stylesheet" href="/css/main.css?v=7.0.0"/>
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.0.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.0.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '7.0.0',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false,"dimmer":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="创建型设计模式专注于处理对象创建机制，以适合给定情况的方式来创建对象。创建对象的基本方式可能导致项目复杂性增加，而这些模式旨在通过控制创建过程来解决这种问题。 构造器模式（Constructor）　　在《JavaScript设计模式》一书中将构造器模式纳入设计模式之中，而四人帮提出的设计模式中不包含构造器模式，不过想要如何划分取决于个人的想法，我比较偏向于前者。其实构造器模式在我们的日常编码工">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JS设计模式-创建型模式">
+<meta property="og:url" content="https://zhuyali.github.io/2018/04/25/JS设计模式-创建型模式/index.html">
+<meta property="og:site_name" content="一只大阿瓜の博客">
+<meta property="og:description" content="创建型设计模式专注于处理对象创建机制，以适合给定情况的方式来创建对象。创建对象的基本方式可能导致项目复杂性增加，而这些模式旨在通过控制创建过程来解决这种问题。 构造器模式（Constructor）　　在《JavaScript设计模式》一书中将构造器模式纳入设计模式之中，而四人帮提出的设计模式中不包含构造器模式，不过想要如何划分取决于个人的想法，我比较偏向于前者。其实构造器模式在我们的日常编码工">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://wx3.sinaimg.cn/mw690/79b5b053gy1fnilnnymb4j20l007xmxx.jpg">
+<meta property="og:image" content="https://wx3.sinaimg.cn/mw690/79b5b053gy1fnilno2jknj20mb0algmy.jpg">
+<meta property="og:image" content="https://gss2.bdstatic.com/9fo3dSag_xI4khGkpoWK1HF6hhy/baike/c0%3Dbaike80%2C5%2C5%2C80%2C26/sign=dc176e019c510fb36c147fc5b85aa3f0/d8f9d72a6059252deef03dbc369b033b5ab5b9a6.jpg">
+<meta property="og:image" content="https://gss1.bdstatic.com/9vo3dSag_xI4khGkpoWK1HF6hhy/baike/c0%3Dbaike72%2C5%2C5%2C72%2C24/sign=ad9321205cdf8db1a8237436684ab631/f703738da977391242e8a5d9fa198618377ae2b8.jpg">
+<meta property="og:image" content="https://gss3.bdstatic.com/-Po3dSag_xI4khGkpoWK1HF6hhy/baike/c0%3Dbaike80%2C5%2C5%2C80%2C26/sign=1a5ca9b6b33533fae1bb9b7cc9ba967a/9f2f070828381f30eaa0ad11ab014c086f06f0c8.jpg">
+<meta property="og:updated_time" content="2019-02-27T08:08:18.709Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="JS设计模式-创建型模式">
+<meta name="twitter:description" content="创建型设计模式专注于处理对象创建机制，以适合给定情况的方式来创建对象。创建对象的基本方式可能导致项目复杂性增加，而这些模式旨在通过控制创建过程来解决这种问题。 构造器模式（Constructor）　　在《JavaScript设计模式》一书中将构造器模式纳入设计模式之中，而四人帮提出的设计模式中不包含构造器模式，不过想要如何划分取决于个人的想法，我比较偏向于前者。其实构造器模式在我们的日常编码工">
+<meta name="twitter:image" content="https://wx3.sinaimg.cn/mw690/79b5b053gy1fnilnnymb4j20l007xmxx.jpg">
+
+
+
+
+
+
+  <link rel="canonical" href="https://zhuyali.github.io/2018/04/25/JS设计模式-创建型模式/"/>
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>JS设计模式-创建型模式 | 一只大阿瓜の博客</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">一只大阿瓜の博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br/>Home</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br/>Archives</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br/>About</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zhuyali.github.io/2018/04/25/JS设计模式-创建型模式/"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Author"/>
+      <meta itemprop="description" content="Talk is cheap, show me the code."/>
+      <meta itemprop="image" content="/images/avatar.gif"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一只大阿瓜の博客"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">JS设计模式-创建型模式
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Post created:2018-04-25 12:58:46" itemprop="dateCreated datePublished" datetime="2018-04-25T12:58:46+08:00">2018-04-25</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Post modified:2019-02-27 16:08:18" itemprop="dateModified" datetime="2019-02-27T16:08:18+08:00">2019-02-27</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+              
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">Comments:</span>
+                <a href="/2018/04/25/JS设计模式-创建型模式/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/04/25/JS设计模式-创建型模式/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             Views: 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>　　创建型设计模式专注于处理对象创建机制，以适合给定情况的方式来创建对象。创建对象的基本方式可能导致项目复杂性增加，而这些模式旨在通过控制创建过程来解决这种问题。</p>
+<h3 id="构造器模式（Constructor）"><a href="#构造器模式（Constructor）" class="headerlink" title="构造器模式（Constructor）"></a>构造器模式（Constructor）</h3><p>　　在《JavaScript设计模式》一书中将构造器模式纳入设计模式之中，而四人帮提出的设计模式中不包含构造器模式，不过想要如何划分取决于个人的想法，我比较偏向于前者。其实构造器模式在我们的日常编码工作中处处可见，这已经是一种类似于规范的模式。在面向对象编程思想中，我们通过“创建构造函数，然后 new 构造函数”的方式来创建对象，这是一种非常普遍的用法，这里不再赘述。</p>
+<h3 id="工厂模式（Factory）"><a href="#工厂模式（Factory）" class="headerlink" title="工厂模式（Factory）"></a>工厂模式（Factory）</h3><p><img src="//wx3.sinaimg.cn/mw690/79b5b053gy1fnilnnymb4j20l007xmxx.jpg" alt="">　　工厂模式的适用场景是，需要动态的创建对象。它需要根据不同的传入参数或者程序运行的上下文来创建不同的对象。设想一个场景：你是一家水杯生产厂商，你的工厂中生产的水杯种类很多，比如塑料杯、玻璃杯以及其它。这种问题适合使用简单工厂模式解决：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">//抽象工厂的接口</span><br><span class="line">var AbstractFactory = function() &#123;&#125;;</span><br><span class="line">AbstractFactory.prototype = &#123;</span><br><span class="line">  createPlasticCup: function() &#123;&#125;, //生产抽象塑料杯</span><br><span class="line">  createGlassCup: function() &#123;&#125; //生产抽象玻璃杯</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">//抽象水杯的接口</span><br><span class="line">var Cup = function() &#123;&#125;;</span><br><span class="line">//塑料水杯的实现</span><br><span class="line">var PlasticCup = function() &#123;&#125;;</span><br><span class="line">PlasticCup.prototype = Object.create(Cup.prototype);</span><br><span class="line">//玻璃水杯的实现</span><br><span class="line">var GlassCup = function() &#123;&#125;;</span><br><span class="line">GlassCup.prototype = Object.create(Cup.prototype);</span><br><span class="line"></span><br><span class="line">//具体的工厂实现对象</span><br><span class="line">var concretFactory = function() &#123;&#125;;</span><br><span class="line">concretFactory.prototype = Object.create(AbstractFactory.prototype);</span><br><span class="line">concretFactory.prototype.createPlasticCup = function() &#123;</span><br><span class="line">  return new PlasticCup();</span><br><span class="line">&#125;;</span><br><span class="line">concretFactory.prototype.createGlassCup = function() &#123;</span><br><span class="line">  return new GlassCup();</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">//调用端</span><br><span class="line">var factory = new concretFactory();</span><br><span class="line">var plasticCup = factory.createPlasticCup();</span><br><span class="line">var glassCup = factory.createGlassCup();</span><br></pre></td></tr></table></figure></p>
+<h3 id="抽象工厂模式（Abstract-Factory）"><a href="#抽象工厂模式（Abstract-Factory）" class="headerlink" title="抽象工厂模式（Abstract Factory）"></a>抽象工厂模式（Abstract Factory）</h3><p><img src="//wx3.sinaimg.cn/mw690/79b5b053gy1fnilno2jknj20mb0algmy.jpg" alt="">　　抽象工厂模式用于封装一组具有共同目标的单个工厂，在工厂模式的基础上新增了家族的概念。以上面举的例子为基础扩展，你打算把你的水杯工厂代理给两个代理商，这两个代理商也代理生产塑料杯和玻璃杯的业务（此时两个代理商对应的水杯工厂具有共同的目标：生产塑料杯和玻璃杯），只不过代理商 A 生产的是宝马牌塑料杯和玻璃杯（宝马就是一个家族），代理商 B 生产的是奔驰牌塑料杯和玻璃杯（奔驰也是一个家族），此时问题的解决方式变为以下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">//抽象工厂的接口</span><br><span class="line">var AbstractFactory = function() &#123;&#125;;</span><br><span class="line">AbstractFactory.prototype = &#123;</span><br><span class="line">  createPlasticCup: function() &#123;&#125;, //生产抽象塑料杯</span><br><span class="line">  createGlassCup: function() &#123;&#125; //生产抽象玻璃杯</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">//塑料抽象水杯的接口</span><br><span class="line">var PlasticCup = function() &#123;&#125;;</span><br><span class="line">//塑料水杯的实现</span><br><span class="line">var PlasticCupBM = function() &#123;&#125;;</span><br><span class="line">PlasticCupBM.prototype = Object.create(PlasticCup.prototype);</span><br><span class="line">var PlasticCupHD = function() &#123;&#125;;</span><br><span class="line">PlasticCupHD.prototype = Object.create(PlasticCup.prototype);</span><br><span class="line"></span><br><span class="line">//玻璃抽象水杯的接口</span><br><span class="line">var GlassCup = function() &#123;&#125;;</span><br><span class="line">//玻璃水杯的实现</span><br><span class="line">var GlassCupBM = function() &#123;&#125;;</span><br><span class="line">GlassCupBM.prototype = Object.create(GlassCup.prototype);</span><br><span class="line">var GlassCupHD = function() &#123;&#125;;</span><br><span class="line">GlassCupHD.prototype = Object.create(GlassCup.prototype);</span><br><span class="line"></span><br><span class="line">//具体的BM工厂实现对象</span><br><span class="line">var concretFactory = function() &#123;&#125;;</span><br><span class="line">concretFactoryBM.prototype = Object.create(AbstractFactory.prototype);</span><br><span class="line">concretFactoryBM.prototype.createPlasticCup = function() &#123;</span><br><span class="line">  return new PlasticCupBM();</span><br><span class="line">&#125;;</span><br><span class="line">concretFactoryBM.prototype.createGlassCup = function() &#123;</span><br><span class="line">  return new GlassCupBM();</span><br><span class="line">&#125;;</span><br><span class="line">//具体的HD工厂实现对象</span><br><span class="line">var concretFactoryHD = function() &#123;&#125;;</span><br><span class="line">concretFactoryHD.prototype = Object.create(AbstractFactory.prototype);</span><br><span class="line">concretFactoryHD.prototype.createPlasticCup = function() &#123;</span><br><span class="line">  return new PlasticCupHD();</span><br><span class="line">&#125;;</span><br><span class="line">concretFactoryHD.prototype.createGlassCup = function() &#123;</span><br><span class="line">  return new GlassCupHD();</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">//调用端</span><br><span class="line">var factory = new concretFactoryBM();</span><br><span class="line">var plasticCupBM = factory.createPlasticCup();</span><br><span class="line">var glassCupBM = factory.createGlassCup();</span><br></pre></td></tr></table></figure></p>
+<h3 id="原型模式（Prototype）"><a href="#原型模式（Prototype）" class="headerlink" title="原型模式（Prototype）"></a>原型模式（Prototype）</h3><p><img src="https://gss2.bdstatic.com/9fo3dSag_xI4khGkpoWK1HF6hhy/baike/c0%3Dbaike80%2C5%2C5%2C80%2C26/sign=dc176e019c510fb36c147fc5b85aa3f0/d8f9d72a6059252deef03dbc369b033b5ab5b9a6.jpg" alt="">　　原型模式通过给出一个原型对象来指明所要创建的对象的类型，然后用复制这个原型对象的办法创建出更多同类型的对象。在 JS 语言中，这个设计模式显得尤其的亲切，因为 JS 中的继承就是通过原型链来完成的。JS 提供了原生的方式 <code>var b = Object.create(a)</code>来实现继承，其中 b 继承自 a，其底层其实就是通过原型来完成的。以下是 <code>Object.create()</code> 方法的一种可替代品：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">var beget = (function() &#123;</span><br><span class="line">  function F() &#123;&#125;</span><br><span class="line">  return function(proto) &#123;</span><br><span class="line">    F.prototype = proto;</span><br><span class="line">    return new F();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)();</span><br></pre></td></tr></table></figure></p>
+<h3 id="单例模式（Singleton）"><a href="#单例模式（Singleton）" class="headerlink" title="单例模式（Singleton）"></a>单例模式（Singleton）</h3><p><img src="https://gss1.bdstatic.com/9vo3dSag_xI4khGkpoWK1HF6hhy/baike/c0%3Dbaike72%2C5%2C5%2C72%2C24/sign=ad9321205cdf8db1a8237436684ab631/f703738da977391242e8a5d9fa198618377ae2b8.jpg" alt="">　　单例模式确保一个类只有一个实例，并且提供一个单一访问点。单例模式的实现很简单：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">const singleton = (function() &#123;</span><br><span class="line">  var instance;</span><br><span class="line">  function init() &#123;</span><br><span class="line">    var privateMethod = function() &#123;</span><br><span class="line">      console.log(&apos;This is a private method&apos;);</span><br><span class="line">    &#125;;</span><br><span class="line">    var privateVariable = &apos;This is a private variable&apos;;</span><br><span class="line">    return &#123;</span><br><span class="line">      publicMethod: function() &#123;</span><br><span class="line">        privateMethod();</span><br><span class="line">        console.log(privateVariable);</span><br><span class="line">      &#125;,</span><br><span class="line">      publicVariable: &apos;This is a public variable&apos;</span><br><span class="line">    &#125;;</span><br><span class="line">  &#125;</span><br><span class="line">  return &#123;</span><br><span class="line">    getInstance: function() &#123;</span><br><span class="line">      if (!instance) &#123;</span><br><span class="line">        instance = init();</span><br><span class="line">      &#125;</span><br><span class="line">      return instance;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;)();</span><br></pre></td></tr></table></figure></p>
+<p>　　以上代码实现了一个简单的单例模式，可以通过 <code>singleton.getInstance()</code> 来获取唯一的实例。上面的代码中有很多跟单例模式无关的代码，主要是为了展示一下私有变量和公有变量的访问。</p>
+<h3 id="建造者模式（Builder）"><a href="#建造者模式（Builder）" class="headerlink" title="建造者模式（Builder）"></a>建造者模式（Builder）</h3><p><img src="https://gss3.bdstatic.com/-Po3dSag_xI4khGkpoWK1HF6hhy/baike/c0%3Dbaike80%2C5%2C5%2C80%2C26/sign=1a5ca9b6b33533fae1bb9b7cc9ba967a/9f2f070828381f30eaa0ad11ab014c086f06f0c8.jpg" alt="">　　建造者模式将产品的结构和产品的零件建造过程对客户端隐藏起来，把对建造过程进行指挥的责任和具体建造零件的责任分割开来，达到责任划分和封装的目的。比如说构建一个人分为构建头部，身体和脚三个部分，但是用户无需知道构建过程。代码实现如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">var Director = function(builder) &#123;</span><br><span class="line">  this.builder = builder;</span><br><span class="line">&#125;;</span><br><span class="line">Director.prototype.construct = function() &#123;</span><br><span class="line">  this.builder.buildHead();</span><br><span class="line">  this.builder.buildBody();</span><br><span class="line">  this.builder.buildFoot();</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">var Builder = function() &#123;&#125;;</span><br><span class="line">Builder.prototype = &#123;</span><br><span class="line">  buildHead: function() &#123;&#125;,</span><br><span class="line">  buildBody: function() &#123;&#125;,</span><br><span class="line">  buildFoot: function() &#123;&#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">var concreteBuilder = function() &#123;&#125;;</span><br><span class="line">concreteBuilder.prototype = Object.create(Builder.prototype);</span><br><span class="line">concreteBuilder.prototype.buildHead = function() &#123;</span><br><span class="line">  console.log(&apos;构建头部&apos;);</span><br><span class="line">&#125;;</span><br><span class="line">concreteBuilder.prototype.buildBody = function() &#123;</span><br><span class="line">  console.log(&apos;构建身体&apos;);</span><br><span class="line">&#125;;</span><br><span class="line">concreteBuilder.prototype.buildFoot = function() &#123;</span><br><span class="line">  console.log(&apos;构建脚&apos;);</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">const director = new Director(new concreteBuilder());</span><br><span class="line">director.construct();</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/03/07/CSS魔法篇之布局实践/" rel="next" title="CSS魔法篇之布局实践">
+                <i class="fa fa-chevron-left"></i> CSS魔法篇之布局实践
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/04/26/Vue的响应式数据原理/" rel="prev" title="Vue的响应式数据原理">
+                Vue的响应式数据原理 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Author</p>
+              <p class="site-description motion-element" itemprop="description">Talk is cheap, show me the code.</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">25</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/zhuyali" title="GitHub &rarr; https://github.com/zhuyali" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#构造器模式（Constructor）"><span class="nav-number">1.</span> <span class="nav-text">构造器模式（Constructor）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#工厂模式（Factory）"><span class="nav-number">2.</span> <span class="nav-text">工厂模式（Factory）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#抽象工厂模式（Abstract-Factory）"><span class="nav-number">3.</span> <span class="nav-text">抽象工厂模式（Abstract Factory）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#原型模式（Prototype）"><span class="nav-number">4.</span> <span class="nav-text">原型模式（Prototype）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#单例模式（Singleton）"><span class="nav-number">5.</span> <span class="nav-text">单例模式（Singleton）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#建造者模式（Builder）"><span class="nav-number">6.</span> <span class="nav-text">建造者模式（Builder）</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Author</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v7.0.0</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="Total Visitors">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="Total Views">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=7.0.0"></script>
+
+  <script src="/js/src/motion.js?v=7.0.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/schemes/muse.js?v=7.0.0"></script>
+
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=7.0.0"></script>
+<script src="/js/src/post-details.js?v=7.0.0"></script>
+
+
+
+  
+
+
+  <script src="/js/src/bootstrap.js?v=7.0.0"></script>
+
+
+  
+  
+  
+  <script id="dsq-count-scr" src="https://zhuyali.disqus.com/count.js" async></script>
+
+
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://zhuyali.github.io/2018/04/25/JS设计模式-创建型模式/";
+    this.page.identifier = "2018/04/25/JS设计模式-创建型模式/";
+    this.page.title = 'JS设计模式-创建型模式';
+    };
+  function loadComments() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://zhuyali.disqus.com/embed.js';
+    s.setAttribute('data-timestamp', '' + +new Date());
+    (d.head || d.body).appendChild(s);
+  }
+  
+    loadComments();
+  
+</script>
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

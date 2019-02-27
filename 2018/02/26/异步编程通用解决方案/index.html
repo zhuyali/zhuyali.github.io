@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222"/>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2"/>
+
+<link rel="stylesheet" href="/css/main.css?v=7.0.0"/>
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.0.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.0.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '7.0.0',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false,"dimmer":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="在该文中，我们希望封装一个异步函数的语法糖，使得它能够兼具回调函数、Promise、Generator 以及 async/await 的写法特点，形成一个通用的异步编程解决方案。目的是在异步编程的过程中，以不变的方法，应万变的方式。在本文中，前四小节主要介绍如何使用各种方式来进行异步函数 asyncMethod 的调用，了解了如何调用后，最后一节的着重点在于设计该异步函数 asyncMetho">
+<meta property="og:type" content="article">
+<meta property="og:title" content="异步编程通用解决方案">
+<meta property="og:url" content="https://zhuyali.github.io/2018/02/26/异步编程通用解决方案/index.html">
+<meta property="og:site_name" content="一只大阿瓜の博客">
+<meta property="og:description" content="在该文中，我们希望封装一个异步函数的语法糖，使得它能够兼具回调函数、Promise、Generator 以及 async/await 的写法特点，形成一个通用的异步编程解决方案。目的是在异步编程的过程中，以不变的方法，应万变的方式。在本文中，前四小节主要介绍如何使用各种方式来进行异步函数 asyncMethod 的调用，了解了如何调用后，最后一节的着重点在于设计该异步函数 asyncMetho">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-02-27T08:08:18.716Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="异步编程通用解决方案">
+<meta name="twitter:description" content="在该文中，我们希望封装一个异步函数的语法糖，使得它能够兼具回调函数、Promise、Generator 以及 async/await 的写法特点，形成一个通用的异步编程解决方案。目的是在异步编程的过程中，以不变的方法，应万变的方式。在本文中，前四小节主要介绍如何使用各种方式来进行异步函数 asyncMethod 的调用，了解了如何调用后，最后一节的着重点在于设计该异步函数 asyncMetho">
+
+
+
+
+
+
+  <link rel="canonical" href="https://zhuyali.github.io/2018/02/26/异步编程通用解决方案/"/>
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>异步编程通用解决方案 | 一只大阿瓜の博客</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">一只大阿瓜の博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br/>Home</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br/>Archives</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br/>About</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zhuyali.github.io/2018/02/26/异步编程通用解决方案/"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Author"/>
+      <meta itemprop="description" content="Talk is cheap, show me the code."/>
+      <meta itemprop="image" content="/images/avatar.gif"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一只大阿瓜の博客"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">异步编程通用解决方案
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Post created:2018-02-26 10:58:35" itemprop="dateCreated datePublished" datetime="2018-02-26T10:58:35+08:00">2018-02-26</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Post modified:2019-02-27 16:08:18" itemprop="dateModified" datetime="2019-02-27T16:08:18+08:00">2019-02-27</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+              
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">Comments:</span>
+                <a href="/2018/02/26/异步编程通用解决方案/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/02/26/异步编程通用解决方案/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             Views: 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>　　在该文中，我们希望封装一个异步函数的语法糖，使得它能够兼具回调函数、Promise、Generator 以及 async/await 的写法特点，形成一个通用的异步编程解决方案。目的是在异步编程的过程中，以不变的方法，应万变的方式。在本文中，前四小节主要介绍如何使用各种方式来进行异步函数 asyncMethod 的调用，了解了如何调用后，最后一节的着重点在于设计该异步函数 asyncMethod，使得它满足之前提到的所有调用场景。</p>
+<h3 id="回调函数"><a href="#回调函数" class="headerlink" title="回调函数"></a>回调函数</h3><p>　　回调函数可以说是 JS 语言一个非常鲜明的特性，它允许我们在未来的某个时间执行一个函数。JS 语言本身就提供了非常多支持回调函数的 API，比如定时器函数：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">setTimeout(function() &#123;</span><br><span class="line">  // 执行逻辑</span><br><span class="line">&#125;, 1000);</span><br></pre></td></tr></table></figure></p>
+<p>　　在 Node.js 中，设计回调函数的一个通用原则是把错误和结果都放到回调函数中做处理，往往是把错误 err 作为第一个参数，结果 val 作为第二个参数。所以 asyncMethod 的调用方式设计如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">asyncMethod(data, (err, val) =&gt; &#123;</span><br><span class="line">  if (err) &#123;</span><br><span class="line">    console.log(err);</span><br><span class="line">  &#125; else &#123;</span><br><span class="line">    console.log(val);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<h3 id="Promise"><a href="#Promise" class="headerlink" title="Promise"></a>Promise</h3><p>　　Promise 是异步编程的一种解决方案，它的出现完美优雅的解决了回调地狱的问题。Promise 的用法如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">const promise = new Promise(function(resolve, reject) &#123;</span><br><span class="line">  // ... 执行逻辑</span><br><span class="line">  if (/* 异步操作成功 */)&#123;</span><br><span class="line">    resolve(val);</span><br><span class="line">  &#125; else &#123;</span><br><span class="line">    reject(err);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">promise.then(function(value) &#123;</span><br><span class="line">  // 成功</span><br><span class="line">&#125;, function(error) &#123;</span><br><span class="line">  // 失败</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<p>有了对 Promise 基本用法的掌握后，我们希望 asyncMethod 的调用方式兼容 Promise：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">asyncMethod(data)</span><br><span class="line">  .then(val =&gt; &#123;</span><br><span class="line">    console.log(val);</span><br><span class="line">  &#125;)</span><br><span class="line">  .catch(err =&gt; &#123;</span><br><span class="line">    console.log(err);</span><br><span class="line">  &#125;);</span><br></pre></td></tr></table></figure></p>
+<h3 id="Generator-函数"><a href="#Generator-函数" class="headerlink" title="Generator 函数"></a>Generator 函数</h3><p>　　Generator 是 ES6 提出的一种异步编程解决方案。它是一个状态机，封装了多个内部状态。Generator 函数的基本形式如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">function *numberGenerator() &#123;</span><br><span class="line">  yield 1;</span><br><span class="line">  yield 2;</span><br><span class="line">  return 3;</span><br><span class="line">&#125;</span><br><span class="line">const ng = numberGenerator();</span><br><span class="line">ng.next(); // &#123; value: 1, done: false &#125;</span><br><span class="line">ng.next(); // &#123; value: 2, done: false &#125;</span><br><span class="line">ng.next(); // &#123; value: 3, done: true &#125;</span><br></pre></td></tr></table></figure></p>
+<p>　　该函数包含三个状态：1，2 和 3。调用该函数时，返回一个遍历器对象，代表 Generator 函数的内部指针。当该遍历器调用 next 方法时，才会遍历下一个状态，所以其实是提供了一种可以暂停执行的函数，而这一点其实是将 Generator 函数用于异步场景的关键点。所以 Generator 函数的一个特点就是每遇到一个 yield，函数就将执行权交出，等到 yield 后面的操作执行完毕后，继续执行；若 yield 后面跟了一个异步操作，那么我们可以在这之后得到本次异步操作的结果，这种写法的优点之一就是可以变异步为“同步”，写起来会十分流畅。理解了 Generator 函数的异步理念后，可以设想 asyncMethod 的用法如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">function *gen() &#123;</span><br><span class="line">  try &#123;</span><br><span class="line">    let val = yield asyncMethod(data);</span><br><span class="line">    console.log(val);</span><br><span class="line">  &#125; catch (err) &#123;</span><br><span class="line">    console.log(err);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>　　但是 Generator 函数的执行是需要通过不断调用 next 函数来实现的，因而可以在上面函数的最外层再套一个 genWrapper 用来控制流程的执行，genWrapper 可以自行进行实现，当然最好使用 tj 大神写的 co 模块。具体代码如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">co(gen);</span><br></pre></td></tr></table></figure></p>
+<p>　　讲到这里呢，其实可以发现 asyncMethod 对待 Generator 函数并没有特殊之处，所以 Generator 的异步方式对 asyncMethod 的具体实现不产生影响。</p>
+<h3 id="async-await"><a href="#async-await" class="headerlink" title="async/await"></a>async/await</h3><p>　　async 函数是 Generator 函数的语法糖。</p>
+<ul>
+<li>它的语法类似于 Generator 函数，把 * 换成 async，把 yield 换成 await</li>
+<li>Generator 函数的执行必须依靠执行器，async 函数通过封装自带执行器</li>
+<li>返回 Promise 对象，可以使用 then 指定下一步的操作<br>　　async 函数在调用时与同步操作一样，只要一行就可以搞定。asyncMethod 的用法如下：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">async function asyncWrapper(data) &#123;</span><br><span class="line">  try &#123;</span><br><span class="line">    let val = await asyncMethod(data);</span><br><span class="line">    console.log(val);</span><br><span class="line">  &#125; catch (err) &#123;</span><br><span class="line">    console.log(err);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">asyncWrapper(data);</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="通用异步编程方案"><a href="#通用异步编程方案" class="headerlink" title="通用异步编程方案"></a>通用异步编程方案</h3><p>　　终于进入正题，前面已经总结过使用回调函数，Promise，Generator 函数和 async 函数调用 asyncMethod 的方法，其实不难发现，真正有启发性的是回调函数和 Promise，因为另外两种用法只要返回 Promise 就可支持。asyncMethod 的实现如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">const asyncMethod = function () &#123;</span><br><span class="line">  const args = Array.prototype.slice.call(arguments);</span><br><span class="line">  const data = args[0];</span><br><span class="line">  const cb = args[1];</span><br><span class="line"></span><br><span class="line">  const promise = new Promise((resolve, reject) =&gt; &#123;</span><br><span class="line">    if (typeof data === &apos;number&apos;) &#123;</span><br><span class="line">      resolve(data);</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">      reject(data);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;);</span><br><span class="line"></span><br><span class="line">  if (typeof cb === &apos;function&apos;) &#123;</span><br><span class="line">    return promise</span><br><span class="line">      .then(val =&gt; &#123;</span><br><span class="line">        cb.call(this, null, val);</span><br><span class="line">      &#125;)</span><br><span class="line">      .catch(err =&gt; &#123;</span><br><span class="line">        cb.call(this, err);</span><br><span class="line">      &#125;);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  return promise;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<h3 id="注明"><a href="#注明" class="headerlink" title="注明"></a>注明</h3><ul>
+<li><p>data 是应该替换为真实的数据，我使用如下两个变量来进行的测试（你可以把 data 替换为 number 或者 error）</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">const number = 1;</span><br><span class="line">const error = new Error(&apos;error&apos;);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>以上的代码全部复制到编辑器中就可以运行（不要忘记安装 co 模块）</p>
+</li>
+<li>本文主要说明思想，很多场景可能无法覆盖，望见谅</li>
+</ul>
+<h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><p><a href="http://es6.ruanyifeng.com/" target="_blank" rel="noopener">ECMAScript 6 入门</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/01/31/CSS魔法篇之清除浮动/" rel="next" title="CSS魔法篇之清除浮动">
+                <i class="fa fa-chevron-left"></i> CSS魔法篇之清除浮动
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/03/05/Promise的一些尝试/" rel="prev" title="Promise的一些尝试">
+                Promise的一些尝试 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Author</p>
+              <p class="site-description motion-element" itemprop="description">Talk is cheap, show me the code.</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">25</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/zhuyali" title="GitHub &rarr; https://github.com/zhuyali" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#回调函数"><span class="nav-number">1.</span> <span class="nav-text">回调函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Promise"><span class="nav-number">2.</span> <span class="nav-text">Promise</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Generator-函数"><span class="nav-number">3.</span> <span class="nav-text">Generator 函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#async-await"><span class="nav-number">4.</span> <span class="nav-text">async/await</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#通用异步编程方案"><span class="nav-number">5.</span> <span class="nav-text">通用异步编程方案</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#注明"><span class="nav-number">6.</span> <span class="nav-text">注明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考资料"><span class="nav-number">7.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Author</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v7.0.0</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="Total Visitors">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="Total Views">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=7.0.0"></script>
+
+  <script src="/js/src/motion.js?v=7.0.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/schemes/muse.js?v=7.0.0"></script>
+
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=7.0.0"></script>
+<script src="/js/src/post-details.js?v=7.0.0"></script>
+
+
+
+  
+
+
+  <script src="/js/src/bootstrap.js?v=7.0.0"></script>
+
+
+  
+  
+  
+  <script id="dsq-count-scr" src="https://zhuyali.disqus.com/count.js" async></script>
+
+
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://zhuyali.github.io/2018/02/26/异步编程通用解决方案/";
+    this.page.identifier = "2018/02/26/异步编程通用解决方案/";
+    this.page.title = '异步编程通用解决方案';
+    };
+  function loadComments() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://zhuyali.disqus.com/embed.js';
+    s.setAttribute('data-timestamp', '' + +new Date());
+    (d.head || d.body).appendChild(s);
+  }
+  
+    loadComments();
+  
+</script>
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

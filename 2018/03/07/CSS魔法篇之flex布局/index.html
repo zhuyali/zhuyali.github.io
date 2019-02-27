@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222"/>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2"/>
+
+<link rel="stylesheet" href="/css/main.css?v=7.0.0"/>
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.0.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.0.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '7.0.0',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false,"dimmer":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="Flex 基础布局可以参考阮老师的文章，写的非常的详尽，并且配备了大量的示例。这里主要聊一聊 flex 的一些注意点。 轴对齐　　在接下来的描述中，默认主轴为水平轴，交叉轴为垂直轴，并且书写模式为从左到右。与主轴对齐相关的属性是 justify-content，该属性设置于 flex 容器上。与交叉轴对齐相关的属性有 align-items，align-content 和 align-self">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CSS魔法篇之flex布局">
+<meta property="og:url" content="https://zhuyali.github.io/2018/03/07/CSS魔法篇之flex布局/index.html">
+<meta property="og:site_name" content="一只大阿瓜の博客">
+<meta property="og:description" content="Flex 基础布局可以参考阮老师的文章，写的非常的详尽，并且配备了大量的示例。这里主要聊一聊 flex 的一些注意点。 轴对齐　　在接下来的描述中，默认主轴为水平轴，交叉轴为垂直轴，并且书写模式为从左到右。与主轴对齐相关的属性是 justify-content，该属性设置于 flex 容器上。与交叉轴对齐相关的属性有 align-items，align-content 和 align-self">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://mdn.mozillademos.org/files/15633/align7.png">
+<meta property="og:image" content="https://mdn.mozillademos.org/files/15654/Basics7.png">
+<meta property="og:image" content="https://mdn.mozillademos.org/files/15655/ratios1.png">
+<meta property="og:image" content="https://mdn.mozillademos.org/files/15656/ratios2.png">
+<meta property="og:image" content="https://mdn.mozillademos.org/files/15657/ratios3.png">
+<meta property="og:updated_time" content="2019-02-27T08:08:18.707Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="CSS魔法篇之flex布局">
+<meta name="twitter:description" content="Flex 基础布局可以参考阮老师的文章，写的非常的详尽，并且配备了大量的示例。这里主要聊一聊 flex 的一些注意点。 轴对齐　　在接下来的描述中，默认主轴为水平轴，交叉轴为垂直轴，并且书写模式为从左到右。与主轴对齐相关的属性是 justify-content，该属性设置于 flex 容器上。与交叉轴对齐相关的属性有 align-items，align-content 和 align-self">
+<meta name="twitter:image" content="https://mdn.mozillademos.org/files/15633/align7.png">
+
+
+
+
+
+
+  <link rel="canonical" href="https://zhuyali.github.io/2018/03/07/CSS魔法篇之flex布局/"/>
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>CSS魔法篇之flex布局 | 一只大阿瓜の博客</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">一只大阿瓜の博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br/>Home</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br/>Archives</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br/>About</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zhuyali.github.io/2018/03/07/CSS魔法篇之flex布局/"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Author"/>
+      <meta itemprop="description" content="Talk is cheap, show me the code."/>
+      <meta itemprop="image" content="/images/avatar.gif"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一只大阿瓜の博客"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">CSS魔法篇之flex布局
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Post created:2018-03-07 11:40:26" itemprop="dateCreated datePublished" datetime="2018-03-07T11:40:26+08:00">2018-03-07</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Post modified:2019-02-27 16:08:18" itemprop="dateModified" datetime="2019-02-27T16:08:18+08:00">2019-02-27</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+              
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">Comments:</span>
+                <a href="/2018/03/07/CSS魔法篇之flex布局/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/03/07/CSS魔法篇之flex布局/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             Views: 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>　　Flex 基础布局可以参考阮老师的文章，写的非常的详尽，并且配备了大量的示例。这里主要聊一聊 flex 的一些注意点。</p>
+<h3 id="轴对齐"><a href="#轴对齐" class="headerlink" title="轴对齐"></a>轴对齐</h3><p>　　在接下来的描述中，默认主轴为水平轴，交叉轴为垂直轴，并且书写模式为从左到右。与主轴对齐相关的属性是 justify-content，该属性设置于 flex 容器上。与交叉轴对齐相关的属性有 align-items，align-content 和 align-self，其中前两个设置于 flex 容器上，最后一个设置于 flex 项目上。justify-content 和 align-content 是对应关系，前者对应于主轴每列元素间的空间分配，后者对应于交叉轴每行元素间的空间分配，它们可取的属性值也基本相同，包括 flex-start(轴起始位置)，flex-end(轴终止位置)，center(居中)，space-between(项目之间平均留白)，space-around(项目前后平均留白)，还有一个属性值 stretch 是 align-content 特有的。<br>　　其实不难发现，justify-content 是将 flex 项目当成一个组来做对齐处理，那么如果单个 flex 项目或者多个 flex 项目想和其它 flex 项目分离的话，可以通过 margin 来实现。考虑下面图片的情况，我有三个项目在左边两个在右边，就可以通过给项目 d 设置 <code>margin-left: auto;</code>来实现该效果。它利用的原理是水平方向上的 auto margin 会尽量占据多余的空间以撑开包含块的宽度。<br><img src="https://mdn.mozillademos.org/files/15633/align7.png" alt=""></p>
+<h3 id="冲突的元素设置"><a href="#冲突的元素设置" class="headerlink" title="冲突的元素设置"></a>冲突的元素设置</h3><ol>
+<li>在 flex 项目上设置<code>float: left/right;</code>没有效果</li>
+<li>在 flex 项目上设置<code>display: inline-block;</code>没有效果</li>
+<li>在 flex 项目上设置<code>display: table-;</code>没有效果</li>
+</ol>
+<h3 id="项目尺寸和伸缩性"><a href="#项目尺寸和伸缩性" class="headerlink" title="项目尺寸和伸缩性"></a>项目尺寸和伸缩性</h3><p>　　flex 项目最终展现出的尺寸大小与三个属性有关：flex-grow，flex-shrink 和 flex-basis。flex 项目之所以能够自由的伸缩依赖于 flex 容器的正负自由空间，可以看下图理解：<br><img src="https://mdn.mozillademos.org/files/15654/Basics7.png" alt="">　　在上图中，容器为 500 像素宽，每个项目为 100 像素宽，剩余了 200 像素的 positive free space。<br><img src="https://mdn.mozillademos.org/files/15655/ratios1.png" alt="">　　在上图中，容器为 500 像素宽，每个项目为 200 像素宽，那么项目的总宽度超过了容器宽度，就有了 100 像素的 negative free space。<br>　　flex-grow 定义了项目如何扩张，它会按照比例分配总的可用空间给各个项目。在以下两张图代表的例子中，设置各个项目的<code>flex-basis: auto;</code>让它们自动调整大小，此时总的可用空间就是容器的宽度减去各个项目的宽度，也就是图中的阴影区域。如果我们相对这篇阴影区域在每个项目之间进行平均分配，就设置每个项目的<code>flex-grow: 1;</code>即可。其实对于 flex-grow 的设置不一定非要是整数，设置该值的主要用途是用作比例，因而可以任意设置该值，只要保证它们的比例为 1：1：1 即可。（最后在强调一点，flex-grow 的比例并不是项目的大小比例，而是对于剩余的空间分配的比例）<br><img src="https://mdn.mozillademos.org/files/15656/ratios2.png" alt=""><img src="https://mdn.mozillademos.org/files/15657/ratios3.png" alt="">　　flex-shrink 定义了项目如何收缩，用途类似于 flex-grow，这里不详细说明。<br>　　flex-basis 定义了项目的基础尺寸，它的初始值为 auto，如果你给项目设置了宽度，那么基础尺寸就为该宽度；如果项目大小没有设置，那么基础尺寸就会恰好包含其内容。空间分配时，如果你想要完全忽略该项目的尺寸，可以设置该属性值为 0，这相当于告诉 flexbox 该项目的所有空间都可以抢占，并按比例分享。</p>
+<h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><ol>
+<li><a href="http://www.ruanyifeng.com/blog/2015/07/flex-grammar.html" target="_blank" rel="noopener">Flex 布局教程：语法篇</a></li>
+<li><a href="https://developer.mozilla.org/en-US/docs/Glossary/Flex" target="_blank" rel="noopener">MDN Flex</a></li>
+</ol>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/03/05/Promise的一些尝试/" rel="next" title="Promise的一些尝试">
+                <i class="fa fa-chevron-left"></i> Promise的一些尝试
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/03/07/CSS魔法篇之布局实践/" rel="prev" title="CSS魔法篇之布局实践">
+                CSS魔法篇之布局实践 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Author</p>
+              <p class="site-description motion-element" itemprop="description">Talk is cheap, show me the code.</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">25</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/zhuyali" title="GitHub &rarr; https://github.com/zhuyali" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#轴对齐"><span class="nav-number">1.</span> <span class="nav-text">轴对齐</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#冲突的元素设置"><span class="nav-number">2.</span> <span class="nav-text">冲突的元素设置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#项目尺寸和伸缩性"><span class="nav-number">3.</span> <span class="nav-text">项目尺寸和伸缩性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考资料"><span class="nav-number">4.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Author</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v7.0.0</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="Total Visitors">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="Total Views">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=7.0.0"></script>
+
+  <script src="/js/src/motion.js?v=7.0.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/schemes/muse.js?v=7.0.0"></script>
+
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=7.0.0"></script>
+<script src="/js/src/post-details.js?v=7.0.0"></script>
+
+
+
+  
+
+
+  <script src="/js/src/bootstrap.js?v=7.0.0"></script>
+
+
+  
+  
+  
+  <script id="dsq-count-scr" src="https://zhuyali.disqus.com/count.js" async></script>
+
+
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://zhuyali.github.io/2018/03/07/CSS魔法篇之flex布局/";
+    this.page.identifier = "2018/03/07/CSS魔法篇之flex布局/";
+    this.page.title = 'CSS魔法篇之flex布局';
+    };
+  function loadComments() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://zhuyali.disqus.com/embed.js';
+    s.setAttribute('data-timestamp', '' + +new Date());
+    (d.head || d.body).appendChild(s);
+  }
+  
+    loadComments();
+  
+</script>
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

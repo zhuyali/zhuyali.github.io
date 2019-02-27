@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222"/>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2"/>
+
+<link rel="stylesheet" href="/css/main.css?v=7.0.0"/>
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.0.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.0.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '7.0.0',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false,"dimmer":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="关于迭代和递归是什么，概念性的东西我不多介绍，举个例子（参考知乎上「递归」和「迭代」有哪些区别？的回答)，比如你要给某小孩买玩具，迭代是你挑了一件觉得不行，又挑了一件又不行，如此这般，直到找到合适的玩具。而递归是你自己不太了解小孩子的需求，为了缩小范围，你让你的儿子去挑选，儿子虽然比你强点，但依然不太了解小孩子的需求，然后他又让你孙子去挑选，如此这般，直到找到合适的玩具。　　underscor">
+<meta property="og:type" content="article">
+<meta property="og:title" content="underscore(1.9.0)源码阅读系列-迭代与递归">
+<meta property="og:url" content="https://zhuyali.github.io/2018/05/29/underscore源码阅读系列-迭代与递归/index.html">
+<meta property="og:site_name" content="一只大阿瓜の博客">
+<meta property="og:description" content="关于迭代和递归是什么，概念性的东西我不多介绍，举个例子（参考知乎上「递归」和「迭代」有哪些区别？的回答)，比如你要给某小孩买玩具，迭代是你挑了一件觉得不行，又挑了一件又不行，如此这般，直到找到合适的玩具。而递归是你自己不太了解小孩子的需求，为了缩小范围，你让你的儿子去挑选，儿子虽然比你强点，但依然不太了解小孩子的需求，然后他又让你孙子去挑选，如此这般，直到找到合适的玩具。　　underscor">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-02-27T08:08:18.715Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="underscore(1.9.0)源码阅读系列-迭代与递归">
+<meta name="twitter:description" content="关于迭代和递归是什么，概念性的东西我不多介绍，举个例子（参考知乎上「递归」和「迭代」有哪些区别？的回答)，比如你要给某小孩买玩具，迭代是你挑了一件觉得不行，又挑了一件又不行，如此这般，直到找到合适的玩具。而递归是你自己不太了解小孩子的需求，为了缩小范围，你让你的儿子去挑选，儿子虽然比你强点，但依然不太了解小孩子的需求，然后他又让你孙子去挑选，如此这般，直到找到合适的玩具。　　underscor">
+
+
+
+
+
+
+  <link rel="canonical" href="https://zhuyali.github.io/2018/05/29/underscore源码阅读系列-迭代与递归/"/>
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>underscore(1.9.0)源码阅读系列-迭代与递归 | 一只大阿瓜の博客</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">一只大阿瓜の博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br/>Home</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br/>Archives</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br/>About</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zhuyali.github.io/2018/05/29/underscore源码阅读系列-迭代与递归/"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Author"/>
+      <meta itemprop="description" content="Talk is cheap, show me the code."/>
+      <meta itemprop="image" content="/images/avatar.gif"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一只大阿瓜の博客"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">underscore(1.9.0)源码阅读系列-迭代与递归
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Post created:2018-05-29 16:20:21" itemprop="dateCreated datePublished" datetime="2018-05-29T16:20:21+08:00">2018-05-29</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Post modified:2019-02-27 16:08:18" itemprop="dateModified" datetime="2019-02-27T16:08:18+08:00">2019-02-27</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+              
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">Comments:</span>
+                <a href="/2018/05/29/underscore源码阅读系列-迭代与递归/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/05/29/underscore源码阅读系列-迭代与递归/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             Views: 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>　　关于迭代和递归是什么，概念性的东西我不多介绍，举个例子（参考知乎上<a href="https://www.zhihu.com/question/20278387" target="_blank" rel="noopener">「递归」和「迭代」有哪些区别？</a>的回答)，比如你要给某小孩买玩具，迭代是你挑了一件觉得不行，又挑了一件又不行，如此这般，直到找到合适的玩具。而递归是你自己不太了解小孩子的需求，为了缩小范围，你让你的儿子去挑选，儿子虽然比你强点，但依然不太了解小孩子的需求，然后他又让你孙子去挑选，如此这般，直到找到合适的玩具。<br>　　underscore 中使用了大量的迭代和递归，这里粗浅罗列一下，使用到迭代的方法有 _.property、 _.reduce、 _.compose、 _.has、 _.result、 _.propertyOf 以及 _.min 和 _.max 等，使用到递归的方法有 _.flatten 和 _.isEqual。其实递归和迭代在平时的编码中也都会用到很多，我想大家对它的掌握程度都不错，这里之所以要专门写一篇文章来介绍递归和迭代，主要是因为我在看源码的过程中，多次看到了递归和迭代的使用，但却很少注意到这两种用法，所以就有了以下的“温故知新”。</p>
+<h3 id="underscore-中的迭代-reduce"><a href="#underscore-中的迭代-reduce" class="headerlink" title="underscore 中的迭代 - _.reduce"></a>underscore 中的迭代 - _.reduce</h3><p>　　用到迭代的函数千千万，这里就只聊聊经典的 <em>.reduce。reduce 函数应该是每一个 JavaScript 开发者都熟悉的函数，因为 Array 原生提供了 Array.prototype.reduce(callback[, initialValue]) 函数，这个函数接收两个参数，第一个参数 callback 是一个函数，接收 (accumulator, currentValue, [currentIndex], [array])，其中后面三个参数语义比较明显，这里不做解释。第一个参数的字面意思是累加器，它是上一个数组元素执行 callback 的返回结果，而第一个元素没有上一个参数，怎么办呢？这时候就可以可选的传入第二个参数 initialValue，如果传了该参数，那么 accumulator 的值是 initialValue，currentValue 是数组中下标为 0 的元素；如果没有传该参数，那么 accumulator 的值是数组中下标为 0 的元素，currentValue 是数组中下标为 1 的元素。根据上面的描述，可以知道上一次 callback 的值是下一次 callback 的第一个参数，这…？很明显就是用了迭代吧~ 好了，接下来我们看看具体实现，在 underscore 中，reduce 家族(</em>.reduce 以及 _.reduceRight) 底层都是通过函数 createReduce(dir) 来实现的，其中参数 dir 代表方向。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">var createReduce = function(dir) &#123;</span><br><span class="line">  var reducer = function(obj, iteratee, memo, initial) &#123;</span><br><span class="line">    var keys = !isArrayLike(obj) &amp;&amp; _.keys(obj),</span><br><span class="line">        length = (keys || obj).length,</span><br><span class="line">        index = dir &gt; 0 ? 0 : length - 1;</span><br><span class="line">    // 如果没有传初始值</span><br><span class="line">    if (!initial) &#123;</span><br><span class="line">      // 初始值就为 obj 中的第一个元素(_.reduce)或最后一个元素(_.reduceRight)</span><br><span class="line">      memo = obj[keys ? keys[index] : index];</span><br><span class="line">      // 索引置为下一项的索引(_.reduce) 或前一项的索引(_.reduceRight)</span><br><span class="line">      index += dir;</span><br><span class="line">    &#125;</span><br><span class="line">    for (; index &gt;= 0 &amp;&amp; index &lt; length; index += dir) &#123;</span><br><span class="line">      // 当前元素的 key</span><br><span class="line">      var currentKey = keys ? keys[index] : index;</span><br><span class="line">      // 用上一次迭代的返回值，作为本次迭代的第一个参数</span><br><span class="line">      memo = iteratee(memo, obj[currentKey], currentKey, obj);</span><br><span class="line">    &#125;</span><br><span class="line">    return memo;</span><br><span class="line">  &#125;;</span><br><span class="line"></span><br><span class="line">  return function(obj, iteratee, memo, context) &#123;</span><br><span class="line">    // initial 代表有没有传入 memo 值</span><br><span class="line">    var initial = arguments.length &gt;= 3;</span><br><span class="line">    // optimizeCb 负责绑定 iteratee 的上下文，同时规范了 iteratee 的参数为(accumulator, value, index, collection)</span><br><span class="line">    return reducer(obj, optimizeCb(iteratee, context, 4), memo, initial);</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p>　　哈，源码贴出来了，注释也写得比较明白，非常简单，大家就自行理解吧。</p>
+<h3 id="扩展-长度判断的方法"><a href="#扩展-长度判断的方法" class="headerlink" title="扩展: 长度判断的方法"></a>扩展: 长度判断的方法</h3><p>　　不过呢，简单的代码中，也少不了有疑惑的内容，在第一次看源码的过程中，我对下面几行代码看了好几遍才理清，所以这里也简单提一下。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">var keys = !isArrayLike(obj) &amp;&amp; _.keys(obj),</span><br><span class="line">    length = (keys || obj).length;</span><br><span class="line">var currentKey = keys ? keys[index] : index;</span><br></pre></td></tr></table></figure></p>
+<p>　　因为 <em>.reduce 方法是放在 Collections 类目下面，这代表这个方法不一定只针对数组可用，还对对象可用。然后分析上面的代码：首先 <code>isArrayLike(obj)</code> 判断传入的是不是一个类数组对象，本质上是判断 obj 是否具有 length 属性。如果判断为 true，根据 &amp;&amp; 的截断机制，此时 keys 的值为 false，length 就取 obj.length，而 currentKey 就取索引值 index，看到这里我想很多人也猜到了，这是针对数组的判断方式。相反，如果判断为 false，就取到 obj 的键数组，length 值为 keys.length，对应的 currentKey 为 keys[index]，这是针对对象的判断方式。以上，看似好像都没有什么问题，但是我却不这么认为，比如有个对象是 <code>var obj = {x: 1, y: 2, length: 3}</code>，我们可以一眼看出这是一个对象，但是它却符合 isArrayLike 的标准，使得最后以处理数组的方式来处理这个对象，这显然是有问题的。对此，我有一个想法，那就是将 <code>isArrayLike(obj)</code> 替换为判断条件 `isArrayLike(obj) &amp;&amp; (</em>.isArray(obj) || _.isArguments(value))`，这样能够保证不会错误筛选出具有 length 属性的对象。其实在 underscore 源码中就有做这样处理的地方，具体可以参见 _.flatten 的具体实现。</p>
+<h3 id="underscore-中的递归-flatten"><a href="#underscore-中的递归-flatten" class="headerlink" title="underscore 中的递归 - _.flatten"></a>underscore 中的递归 - _.flatten</h3><p>　　underscore 中有两个经典的使用递归的函数：_.flatten 和 <em>.isEqual。</em>.isEqual 后面会单独有一篇文章进行讲解，所以这里我们以较为简单的 <em>.flatten 函数为例。</em>.flatten(array, [shallow]) 是针对数组的平铺函数，可以通过 shallow 来决定是深平铺还是浅平铺。举个例子来说：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[[[1, 2], [1, 2, 3]], [1, 2]] =&gt; [1, 2, 1, 2, 3, 1, 2]</span><br><span class="line">[[[1, 2], [1, 2, 3]], [1, 2]] =&gt; [[1, 2], [1, 2, 3], 1, 2]</span><br></pre></td></tr></table></figure></p>
+<p>　　以上两种都是平铺数组，第一种是把所有的嵌套数组层层展开，也就是深平铺；第二种只展开了第一层嵌套数组，没有递归的展开下去，是浅平铺。接下来我们又要深入源码啦~ 我们先来看看 flatten 的调用形式：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">var flatten = function(input, shallow, strict, output) &#123;</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>　　这个 flatten 函数是 _.flatten 的核心函数。它接受四个参数：input 代表要展开的数组；shallow 决定了是否深度展开；strict 决定是否把非数组元素过滤掉；output 代表传入 flatten 的初始结果。下面举两个例子来分别说明一下最后两个参数：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">// 第三个参数的 demo：因为 5 和 6 是非数组元素，所以在结果中直接过滤掉了</span><br><span class="line">// 推论：如果 strict 为 true 并且 shallow 为 false，那么最终的返回结果一定为 output || []</span><br><span class="line">var ans = flatten([5, 6, [1, 2], [3, 4]], true, true);</span><br><span class="line">console.log(ans); // =&gt; [1, 2, 3, 4]</span><br><span class="line">// 第四个参数的 demo</span><br><span class="line">var ans = flatten([5, 6, [1, 2], [3, 4]], true, false, [7, 8]);</span><br><span class="line">console.log(ans); // =&gt; [7, 8, 5, 6, 1, 2, 3, 4]</span><br></pre></td></tr></table></figure></p>
+<p>　　四个参数都理解之后，我们直接来看源码，加了非常多注释。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">var flatten = function(input, shallow, strict, output) &#123;</span><br><span class="line">  // output 数组保存结果，默认是 []</span><br><span class="line">  // flatten 的返回结果为 output</span><br><span class="line">  output = output || [];</span><br><span class="line">  // idx 代表下一个添加的元素的下标</span><br><span class="line">  var idx = output.length;</span><br><span class="line">  // 遍历要展开的数组</span><br><span class="line">  for (var i = 0, length = getLength(input); i &lt; length; i++) &#123;</span><br><span class="line">    var value = input[i];</span><br><span class="line">    // 如果 value 是数组或者 arguments</span><br><span class="line">    if (isArrayLike(value) &amp;&amp; (_.isArray(value) || _.isArguments(value))) &#123;</span><br><span class="line">      // 如果是浅平铺</span><br><span class="line">      if (shallow) &#123;</span><br><span class="line">        var j = 0, len = value.length;</span><br><span class="line">        // 直接遍历 value</span><br><span class="line">        // 并且进行追加</span><br><span class="line">        while (j &lt; len) output[idx++] = value[j++];</span><br><span class="line">      &#125; </span><br><span class="line">      // 如果是深平铺</span><br><span class="line">      else &#123;</span><br><span class="line">        // 递归遍历 value</span><br><span class="line">        // 因为 output 是引用类型，所以对它的修改可以直接反应到外面</span><br><span class="line">        // 即里面如果对 output 有改动，那么也会反应到外面的 output 上来</span><br><span class="line">        flatten(value, shallow, strict, output);</span><br><span class="line">        // 递归完之后，重新获取下一个添加的元素的下标</span><br><span class="line">        idx = output.length;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125; </span><br><span class="line">    // 如果 value 是个非 arguments 及 非数组</span><br><span class="line">    // 并且如果 strict 为 false，会进入该分支</span><br><span class="line">    // 意味着要追加非数组元素到结果中</span><br><span class="line">    else if (!strict) &#123;</span><br><span class="line">      // 结果追加到 output 后面</span><br><span class="line">      output[idx++] = value;</span><br><span class="line">    &#125;</span><br><span class="line">    // 对于 output 的赋值操作 output[idx++] 仅仅发生在两处</span><br><span class="line">    // 当 shallow 为 false 且 strict 为 true 的时候</span><br><span class="line">    // 永远不会执行任意一处的代码</span><br><span class="line">    // 所以返回的 output 永远为 output || []</span><br><span class="line">  &#125;</span><br><span class="line">  return output;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p>　　总的来说，当进行浅平铺时，只展开第一层；当进行深平铺时，就要持续递归地调用 flatten，直到不能展开为止。</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/05/24/underscore源码阅读系列-硬绑定函数背后的故事/" rel="next" title="underscore(1.9.0)源码阅读系列-硬绑定函数背后的故事">
+                <i class="fa fa-chevron-left"></i> underscore(1.9.0)源码阅读系列-硬绑定函数背后的故事
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/06/06/underscore源码阅读系列-函数节流与函数防抖/" rel="prev" title="underscore(1.9.0)源码阅读系列-函数节流与函数防抖">
+                underscore(1.9.0)源码阅读系列-函数节流与函数防抖 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Author</p>
+              <p class="site-description motion-element" itemprop="description">Talk is cheap, show me the code.</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">25</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/zhuyali" title="GitHub &rarr; https://github.com/zhuyali" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#underscore-中的迭代-reduce"><span class="nav-number">1.</span> <span class="nav-text">underscore 中的迭代 - _.reduce</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#扩展-长度判断的方法"><span class="nav-number">2.</span> <span class="nav-text">扩展: 长度判断的方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#underscore-中的递归-flatten"><span class="nav-number">3.</span> <span class="nav-text">underscore 中的递归 - _.flatten</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Author</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v7.0.0</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="Total Visitors">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="Total Views">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=7.0.0"></script>
+
+  <script src="/js/src/motion.js?v=7.0.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/schemes/muse.js?v=7.0.0"></script>
+
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=7.0.0"></script>
+<script src="/js/src/post-details.js?v=7.0.0"></script>
+
+
+
+  
+
+
+  <script src="/js/src/bootstrap.js?v=7.0.0"></script>
+
+
+  
+  
+  
+  <script id="dsq-count-scr" src="https://zhuyali.disqus.com/count.js" async></script>
+
+
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://zhuyali.github.io/2018/05/29/underscore源码阅读系列-迭代与递归/";
+    this.page.identifier = "2018/05/29/underscore源码阅读系列-迭代与递归/";
+    this.page.title = 'underscore(1.9.0)源码阅读系列-迭代与递归';
+    };
+  function loadComments() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://zhuyali.disqus.com/embed.js';
+    s.setAttribute('data-timestamp', '' + +new Date());
+    (d.head || d.body).appendChild(s);
+  }
+  
+    loadComments();
+  
+</script>
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

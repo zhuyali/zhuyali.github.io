@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222"/>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2"/>
+
+<link rel="stylesheet" href="/css/main.css?v=7.0.0"/>
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.0.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.0.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '7.0.0',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false,"dimmer":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="写在前面　　　　当我们在浏览器的地址栏里输入 URL 时，信息会被送往某处，然后从某处得到回复，最终将内容呈现在 Web 页面上。Web 使用一种名为 HTTP(HyperText Transfer Protocol，超文本传输协议) 的协议作为规范，完成客户端到服务端的一系列运作流程。 网络基础 TCP/IP　　为了理解 HTTP，不得不先了解一下 TCP/IP 协议族。TCP/IP 协议族按层">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HTTP杂烩(一)">
+<meta property="og:url" content="https://zhuyali.github.io/2018/01/08/HTTP杂烩-一/index.html">
+<meta property="og:site_name" content="一只大阿瓜の博客">
+<meta property="og:description" content="写在前面　　　　当我们在浏览器的地址栏里输入 URL 时，信息会被送往某处，然后从某处得到回复，最终将内容呈现在 Web 页面上。Web 使用一种名为 HTTP(HyperText Transfer Protocol，超文本传输协议) 的协议作为规范，完成客户端到服务端的一系列运作流程。 网络基础 TCP/IP　　为了理解 HTTP，不得不先了解一下 TCP/IP 协议族。TCP/IP 协议族按层">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://wx4.sinaimg.cn/mw690/79b5b053ly1fodjnqkm0kj20fq08u0ta.jpg">
+<meta property="og:image" content="https://img3.doubanio.com/view/ark_works_pic/common-largeshow/public/199875086.jpg">
+<meta property="og:image" content="https://wx4.sinaimg.cn/mw690/79b5b053gy1fn9g91l6tvj20h309w425.jpg">
+<meta property="og:image" content="https://wx2.sinaimg.cn/mw690/79b5b053ly1fodjnqkmsmj20fq0a8t9e.jpg">
+<meta property="og:image" content="https://wx3.sinaimg.cn/mw690/79b5b053gy1fn9hntk4bfj20h304yac0.jpg">
+<meta property="og:image" content="https://wx2.sinaimg.cn/mw690/79b5b053gy1fn9gx6qvq4j20er04t40b.jpg">
+<meta property="og:updated_time" content="2019-02-27T08:08:18.709Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="HTTP杂烩(一)">
+<meta name="twitter:description" content="写在前面　　　　当我们在浏览器的地址栏里输入 URL 时，信息会被送往某处，然后从某处得到回复，最终将内容呈现在 Web 页面上。Web 使用一种名为 HTTP(HyperText Transfer Protocol，超文本传输协议) 的协议作为规范，完成客户端到服务端的一系列运作流程。 网络基础 TCP/IP　　为了理解 HTTP，不得不先了解一下 TCP/IP 协议族。TCP/IP 协议族按层">
+<meta name="twitter:image" content="https://wx4.sinaimg.cn/mw690/79b5b053ly1fodjnqkm0kj20fq08u0ta.jpg">
+
+
+
+
+
+
+  <link rel="canonical" href="https://zhuyali.github.io/2018/01/08/HTTP杂烩-一/"/>
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>HTTP杂烩(一) | 一只大阿瓜の博客</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">一只大阿瓜の博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br/>Home</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br/>Archives</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br/>About</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zhuyali.github.io/2018/01/08/HTTP杂烩-一/"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Author"/>
+      <meta itemprop="description" content="Talk is cheap, show me the code."/>
+      <meta itemprop="image" content="/images/avatar.gif"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一只大阿瓜の博客"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">HTTP杂烩(一)
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Post created:2018-01-08 17:39:38" itemprop="dateCreated datePublished" datetime="2018-01-08T17:39:38+08:00">2018-01-08</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Post modified:2019-02-27 16:08:18" itemprop="dateModified" datetime="2019-02-27T16:08:18+08:00">2019-02-27</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+              
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">Comments:</span>
+                <a href="/2018/01/08/HTTP杂烩-一/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/01/08/HTTP杂烩-一/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             Views: 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h3><p>　　<img src="//wx4.sinaimg.cn/mw690/79b5b053ly1fodjnqkm0kj20fq08u0ta.jpg" alt=""><br>　　当我们在浏览器的地址栏里输入 URL 时，信息会被送往某处，然后从某处得到回复，最终将内容呈现在 Web 页面上。Web 使用一种名为 HTTP(HyperText Transfer Protocol，超文本传输协议) 的协议作为规范，完成客户端到服务端的一系列运作流程。</p>
+<h3 id="网络基础-TCP-IP"><a href="#网络基础-TCP-IP" class="headerlink" title="网络基础 TCP/IP"></a>网络基础 TCP/IP</h3><p>　　为了理解 HTTP，不得不先了解一下 TCP/IP 协议族。TCP/IP 协议族按层次分为五层：应用层、传输层、网络层、数据链路层和物理层。分层的好处就是降低耦合度，各层专注于自己的事。各层的作用如下：</p>
+<ol>
+<li>应用层 - 向用户提供应用服务。著名的协议有 FTP、DNS，还有这篇文章的主体 HTTP 等。</li>
+<li>传输层 - 提供处于网络连接中的两台计算机之间的数据传输。著名的两个协议是 TCP 和 UDP。</li>
+<li>网络层 - 处理在网络上流动的数据包。比如 IP 协议。</li>
+<li>数据链路层 - 建立数据链路，传输数据帧。</li>
+<li>物理层 - 以二进制形式在物理媒介上传输数据。</li>
+</ol>
+<h3 id="HTTP-协议的密友：TCP、IP-和-DNS"><a href="#HTTP-协议的密友：TCP、IP-和-DNS" class="headerlink" title="HTTP 协议的密友：TCP、IP 和 DNS"></a>HTTP 协议的密友：TCP、IP 和 DNS</h3><h4 id="IP（网际协议）"><a href="#IP（网际协议）" class="headerlink" title="IP（网际协议）"></a>IP（网际协议）</h4><p>　　IP 协议位于网络层，它的作用是在源地址和目的地址之间传送<em>数据包</em>，要保证确实传送到对方那里，有两个重要的条件是 IP 地址和 MAC 地址。我们先来看一张图：<br>　　<img src="https://img3.doubanio.com/view/ark_works_pic/common-largeshow/public/199875086.jpg" alt=""><br>　　这张图里发生了什么？首先发送端确定好它想给 IP 地址为 192.0.43.10 的地方发送数据包，然后它会先查询 ARP 表以获得该 IP 对应的 MAC 地址，但它发现目的主机与自己并不在同一个局域网内，那么 ARP 就会查询到出口路由的 MAC 地址，并且向其发送数据，该路由器拿到数据后，与上述的操作同理，直至发送到目的主机上。</p>
+<h4 id="TCP（传输控制协议）"><a href="#TCP（传输控制协议）" class="headerlink" title="TCP（传输控制协议）"></a>TCP（传输控制协议）</h4><p>　　TCP 协议是可靠的传输协议，意味着它能够把数据准确可靠地传送给对方，既不丢包还能保证顺序正确。为了保证这种可靠性，TCP 有著名的三次握手和四次挥手。<br>　　三次握手：(客)我给你发了数据包 - (服)明白！我收到了你给我的数据包 - (客)好的！<br>　　四次挥手：客户端和服务端都可以发起挥手，这里假设由服务端发起。(服)我没数据要发给你了 - (客)好的，我收到了。但是我还没准备好，请稍等 - (客)我这里也 OK 了，可以关闭连接了 - (服)好的，再见<br>　　<img src="https://wx4.sinaimg.cn/mw690/79b5b053gy1fn9g91l6tvj20h309w425.jpg" alt=""></p>
+<h4 id="DNS（域名服务）"><a href="#DNS（域名服务）" class="headerlink" title="DNS（域名服务）"></a>DNS（域名服务）</h4><p>　　计算机可以被赋予 IP 地址，也可以被赋予主机名和域名。相较前者来说，用户更喜欢后者，毕竟没有人喜欢记一组长长的数字。DNS 服务应运而生，DNS 协议提供通过域名查找 IP 地址，或逆向从 IP 地址反查域名的服务。<br>　　<img src="//wx2.sinaimg.cn/mw690/79b5b053ly1fodjnqkmsmj20fq0a8t9e.jpg" alt=""><br>　　一些碎碎念：DNS 解析的时候，既会用到 TCP 协议也会用到 UDP 协议。DNS 的规范规定了两种类型的 DNS 服务器：主 DNS 服务器和从 DNS 服务器。当从域名服务器启动后，需要与主域名服务器通信并加载数据信息，这被称为区传送。后续从域名服务器也会定时向主域名服务器进行查询以便了解数据变动，如有变动，就会执行区传送。区传送主要使用 TCP 协议，主要基于以下两点考虑：第一点是区传送的数据传输的信息量很大；二是该传输需要可靠。而域名解析时会使用 UDP 协议，主要是因为客户端查询域名时，服务器返回的信息量很小，同时，使用 UDP 无需三次握手，可以降低域名服务器的负载。</p>
+<h3 id="HTTP-中的数据"><a href="#HTTP-中的数据" class="headerlink" title="HTTP 中的数据"></a>HTTP 中的数据</h3><h4 id="HTTP-报文"><a href="#HTTP-报文" class="headerlink" title="HTTP 报文"></a>HTTP 报文</h4><p>　　在 HTTP 协议中，数据交换的格式就是 HTTP 报文。报文大致可分为报文首部和报文主体两部分，通常，并不一定有报文主体。客户端的 HTTP 报文为请求报文，服务端的 HTTP 报文为响应报文。请求报文第一行为请求行，包含用于请求的方法、请求 URI 和 HTTP 版本。响应报文第一行为状态行，包含表明响应结果的 HTTP 版本、状态码和原因短语，<br>　　<img src="https://wx3.sinaimg.cn/mw690/79b5b053gy1fn9hntk4bfj20h304yac0.jpg" alt=""></p>
+<h4 id="编码提升传输速率"><a href="#编码提升传输速率" class="headerlink" title="编码提升传输速率"></a>编码提升传输速率</h4><p>　　HTTP 在传输时可以按照数据原貌直接传输，也可以在传输过程中通过编码提升传输速率。常用的内容编码有：</p>
+<ol>
+<li>gzip(GNU zip)</li>
+<li>compress(UNIX 系统的标准压缩)</li>
+<li>deflate(zlib)</li>
+<li>identity(不进行编码)</li>
+</ol>
+<p>　　虽然编码后传输可以提高效率，但是在编码实体资源尚未完全传输完成之前，浏览器无法显示请求页面。所以，要应用分块传输编码以将实体主体进行分块，使得浏览器可以逐步展示页面。</p>
+<h3 id="使用方法给服务端下达命令"><a href="#使用方法给服务端下达命令" class="headerlink" title="使用方法给服务端下达命令"></a>使用方法给服务端下达命令</h3><ul>
+<li>GET - 获取资源</li>
+<li>POST - 传输实体主体</li>
+<li>PUT - 传输文件</li>
+<li>HEAD - 获得报文头部</li>
+<li>DELETE - 删除文件</li>
+<li>OPTIONS - 询问支持的方法</li>
+<li>TRACE - 追踪路径</li>
+<li>CONNECT - 要求用隧道协议连接代理</li>
+</ul>
+<p>　　以上的 HTTP 方法中，常用的主要是 GET/POST/PUT/DELETE 四种。</p>
+<h3 id="状态码告知客户端请求结果"><a href="#状态码告知客户端请求结果" class="headerlink" title="状态码告知客户端请求结果"></a>状态码告知客户端请求结果</h3><p>　　<img src="https://wx2.sinaimg.cn/mw690/79b5b053gy1fn9gx6qvq4j20er04t40b.jpg" alt=""><br>　　以下是一些代表性的状态码。在现实生活中，也可以自定义状态码，只要遵守状态码类别的定义即可。</p>
+<h4 id="2XX-成功"><a href="#2XX-成功" class="headerlink" title="2XX 成功"></a>2XX 成功</h4><ul>
+<li>200 OK - 表示从客户端发来的请求被正常处理了</li>
+<li>204 No Content - 请求处理成功，但没有资源可返回</li>
+<li>206 Partial Content - 表示客户端进行了范围请求(Content-Range)，而服务端成功执行了这部分的 GET 请求</li>
+</ul>
+<h4 id="3XX-重定向"><a href="#3XX-重定向" class="headerlink" title="3XX 重定向"></a>3XX 重定向</h4><ul>
+<li>301 Moved Permanently - 永久性重定向</li>
+<li>302 Found - 临时性重定向</li>
+<li>303 See Other - 资源的 URI 已更新，应使用 GET 方法定向获取请求的资源</li>
+<li>304 Not Modified - 表示客户端发送附带条件的请求时，服务端允许请求访问资源，但因条件未满足，直接返回 304 Not Modified（服务端资源未改变，可直接使用客户端未过期的缓存）。虽然 304 被划分在 3XX 类别中，但与重定向没有关系</li>
+<li>307 Temporary Redirect - 临时重定向</li>
+</ul>
+<h4 id="4XX-客户端错误"><a href="#4XX-客户端错误" class="headerlink" title="4XX 客户端错误"></a>4XX 客户端错误</h4><ul>
+<li>400 Bad Request - 请求报文中存在语法错误</li>
+<li>401 Unauthorized - 表示发送的请求需要有通过 HTTP 认证的认证信息</li>
+<li>403 Forbidden - 服务器禁止访问请求的资源</li>
+<li>404 Not Found - 服务器上没有请求的资源</li>
+</ul>
+<h4 id="5XX-服务器错误"><a href="#5XX-服务器错误" class="headerlink" title="5XX 服务器错误"></a>5XX 服务器错误</h4><ul>
+<li>500 Internal Server Error - 服务器在执行请求时出错</li>
+<li>503 Service Unavailable - 服务器暂时处于超负载或正在停机维护</li>
+</ul>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/01/08/JavaScript高级程序回顾-一-——JS的发展历程/" rel="next" title="JavaScript高级程序回顾(一)——JavaScript简介">
+                <i class="fa fa-chevron-left"></i> JavaScript高级程序回顾(一)——JavaScript简介
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/01/09/JavaScript高级程序回顾-二-——请求资源的那些事儿/" rel="prev" title="JavaScript高级程序回顾(二)——请求资源的那些事儿">
+                JavaScript高级程序回顾(二)——请求资源的那些事儿 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Author</p>
+              <p class="site-description motion-element" itemprop="description">Talk is cheap, show me the code.</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">25</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/zhuyali" title="GitHub &rarr; https://github.com/zhuyali" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#写在前面"><span class="nav-number">1.</span> <span class="nav-text">写在前面</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#网络基础-TCP-IP"><span class="nav-number">2.</span> <span class="nav-text">网络基础 TCP/IP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HTTP-协议的密友：TCP、IP-和-DNS"><span class="nav-number">3.</span> <span class="nav-text">HTTP 协议的密友：TCP、IP 和 DNS</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#IP（网际协议）"><span class="nav-number">3.1.</span> <span class="nav-text">IP（网际协议）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#TCP（传输控制协议）"><span class="nav-number">3.2.</span> <span class="nav-text">TCP（传输控制协议）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#DNS（域名服务）"><span class="nav-number">3.3.</span> <span class="nav-text">DNS（域名服务）</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HTTP-中的数据"><span class="nav-number">4.</span> <span class="nav-text">HTTP 中的数据</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#HTTP-报文"><span class="nav-number">4.1.</span> <span class="nav-text">HTTP 报文</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#编码提升传输速率"><span class="nav-number">4.2.</span> <span class="nav-text">编码提升传输速率</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用方法给服务端下达命令"><span class="nav-number">5.</span> <span class="nav-text">使用方法给服务端下达命令</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#状态码告知客户端请求结果"><span class="nav-number">6.</span> <span class="nav-text">状态码告知客户端请求结果</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2XX-成功"><span class="nav-number">6.1.</span> <span class="nav-text">2XX 成功</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3XX-重定向"><span class="nav-number">6.2.</span> <span class="nav-text">3XX 重定向</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4XX-客户端错误"><span class="nav-number">6.3.</span> <span class="nav-text">4XX 客户端错误</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5XX-服务器错误"><span class="nav-number">6.4.</span> <span class="nav-text">5XX 服务器错误</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Author</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v7.0.0</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="Total Visitors">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="Total Views">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=7.0.0"></script>
+
+  <script src="/js/src/motion.js?v=7.0.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/schemes/muse.js?v=7.0.0"></script>
+
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=7.0.0"></script>
+<script src="/js/src/post-details.js?v=7.0.0"></script>
+
+
+
+  
+
+
+  <script src="/js/src/bootstrap.js?v=7.0.0"></script>
+
+
+  
+  
+  
+  <script id="dsq-count-scr" src="https://zhuyali.disqus.com/count.js" async></script>
+
+
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://zhuyali.github.io/2018/01/08/HTTP杂烩-一/";
+    this.page.identifier = "2018/01/08/HTTP杂烩-一/";
+    this.page.title = 'HTTP杂烩(一)';
+    };
+  function loadComments() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://zhuyali.disqus.com/embed.js';
+    s.setAttribute('data-timestamp', '' + +new Date());
+    (d.head || d.body).appendChild(s);
+  }
+  
+    loadComments();
+  
+</script>
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

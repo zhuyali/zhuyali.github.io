@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222"/>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2"/>
+
+<link rel="stylesheet" href="/css/main.css?v=7.0.0"/>
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.0.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.0.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '7.0.0',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false,"dimmer":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="对于每个前端学习者来说，可能在刚接触 JS 的时候就会不断地被灌输一个概念：JS 是单线程的。持着对这个概念的深（似）入（懂）理（非）解（懂），我在 JS 的道路上摸爬滚打了些时日，直到一年多前第一次看到朴灵大大的《深入浅出 Node.js》中对事件循环的解释，我才第一次真正的去尝试着理解 JS 语言的单线程与异步。　　原谅我又要重复一遍：JS 是单线程的，这句话的主语是 JS。譬如我们在 J">
+<meta property="og:type" content="article">
+<meta property="og:title" content="浏览器和Node中不同的Event Loop">
+<meta property="og:url" content="https://zhuyali.github.io/2018/08/02/浏览器和Node中不同的Event-Loop/index.html">
+<meta property="og:site_name" content="一只大阿瓜の博客">
+<meta property="og:description" content="对于每个前端学习者来说，可能在刚接触 JS 的时候就会不断地被灌输一个概念：JS 是单线程的。持着对这个概念的深（似）入（懂）理（非）解（懂），我在 JS 的道路上摸爬滚打了些时日，直到一年多前第一次看到朴灵大大的《深入浅出 Node.js》中对事件循环的解释，我才第一次真正的去尝试着理解 JS 语言的单线程与异步。　　原谅我又要重复一遍：JS 是单线程的，这句话的主语是 JS。譬如我们在 J">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://haitao.nos.netease.com/ecf197da-9f12-4fb4-b486-8cf88f756507_1352_616.png">
+<meta property="og:image" content="https://haitao.nos.netease.com/fdb31d95-19be-46fa-a7a7-e9b9fa7950f5_1292_1084.jpg">
+<meta property="og:image" content="https://haitao.nos.netease.com/bea1944b-28e2-4c51-9bf1-5486c052ec12_1260_1110.jpg">
+<meta property="og:updated_time" content="2019-02-27T08:08:18.716Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="浏览器和Node中不同的Event Loop">
+<meta name="twitter:description" content="对于每个前端学习者来说，可能在刚接触 JS 的时候就会不断地被灌输一个概念：JS 是单线程的。持着对这个概念的深（似）入（懂）理（非）解（懂），我在 JS 的道路上摸爬滚打了些时日，直到一年多前第一次看到朴灵大大的《深入浅出 Node.js》中对事件循环的解释，我才第一次真正的去尝试着理解 JS 语言的单线程与异步。　　原谅我又要重复一遍：JS 是单线程的，这句话的主语是 JS。譬如我们在 J">
+<meta name="twitter:image" content="https://haitao.nos.netease.com/ecf197da-9f12-4fb4-b486-8cf88f756507_1352_616.png">
+
+
+
+
+
+
+  <link rel="canonical" href="https://zhuyali.github.io/2018/08/02/浏览器和Node中不同的Event-Loop/"/>
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>浏览器和Node中不同的Event Loop | 一只大阿瓜の博客</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">一只大阿瓜の博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br/>Home</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br/>Archives</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br/>About</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zhuyali.github.io/2018/08/02/浏览器和Node中不同的Event-Loop/"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Author"/>
+      <meta itemprop="description" content="Talk is cheap, show me the code."/>
+      <meta itemprop="image" content="/images/avatar.gif"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一只大阿瓜の博客"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">浏览器和Node中不同的Event Loop
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Post created:2018-08-02 15:53:43" itemprop="dateCreated datePublished" datetime="2018-08-02T15:53:43+08:00">2018-08-02</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Post modified:2019-02-27 16:08:18" itemprop="dateModified" datetime="2019-02-27T16:08:18+08:00">2019-02-27</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+              
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">Comments:</span>
+                <a href="/2018/08/02/浏览器和Node中不同的Event-Loop/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/08/02/浏览器和Node中不同的Event-Loop/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             Views: 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>　　对于每个前端学习者来说，可能在刚接触 JS 的时候就会不断地被灌输一个概念：JS 是单线程的。持着对这个概念的深（似）入（懂）理（非）解（懂），我在 JS 的道路上摸爬滚打了些时日，直到一年多前第一次看到朴灵大大的《深入浅出 Node.js》中对事件循环的解释，我才第一次真正的去尝试着理解 JS 语言的单线程与异步。<br>　　原谅我又要重复一遍：JS 是单线程的，这句话的主语是 JS。譬如我们在 JS 写了一个 ajax 来发送异步的 HTTP 请求，无需等待 HTTP 的返回结果，我们照样可以继续向下执行代码，那是因为 HTTP 请求本身就不归 JS 管，自然也不需要占用 JS 线程来处理，只有当返回结果后，JS 会在某个空闲的时间去执行回调函数。JS 中另外一个很重要的概念大概就是异步了，它允许我们在不阻塞 JS 线程的前提下，还能拿到我们需要的结果（比如 ajax 拿到响应数据）。异步弥补了 JS 单线程的欠缺，正是因为有这样的机制，才使现在的 JS 语言如此流行，而这一切，都离不开事件循环机制。</p>
+<h3 id="macrotask-amp-microtask"><a href="#macrotask-amp-microtask" class="headerlink" title="macrotask &amp; microtask"></a>macrotask &amp; microtask</h3><p>　　接下来的事件循环总是围绕着 macrotask 和 microtask 来进行的，所以有必要提前搞清能够触发 macrotask 和 microtask 的任务源。</p>
+<h5 id="macrotask（宏任务）"><a href="#macrotask（宏任务）" class="headerlink" title="macrotask（宏任务）"></a>macrotask（宏任务）</h5><p>　　在一个事件循环中，可能存在一个或多个宏任务队列，来自不同任务源的任务会放入不同的队列中，而任务的执行遵守先进先出（FIFO）原则。典型的宏任务源有：</p>
+<ol>
+<li>同步的 JS 代码</li>
+<li>DOM 操作任务源：比如用户触发了点击事件，那么会将回调函数作为宏任务放入任务队列中</li>
+<li>网络任务源：比如 ajax 的回调函数</li>
+<li>setTimeout 和 setInterval 定时器</li>
+<li>setImmediate（ Node 环境中）</li>
+</ol>
+<h5 id="microtask（微任务）"><a href="#microtask（微任务）" class="headerlink" title="microtask（微任务）"></a>microtask（微任务）</h5><p>　　在一个事件循环中，仅仅存在一个微任务队列，通常以下几种任务被认为是微任务：</p>
+<ol>
+<li>Promise.prototype.then 和 Promise.prototype.catch。这里要注意下，创建 Promise 实例是同步的，所以属于宏任务</li>
+<li>process.nextTick（ Node 环境中）</li>
+</ol>
+<h3 id="浏览器中的事件循环"><a href="#浏览器中的事件循环" class="headerlink" title="浏览器中的事件循环"></a>浏览器中的事件循环</h3><p><img src="https://haitao.nos.netease.com/ecf197da-9f12-4fb4-b486-8cf88f756507_1352_616.png" style="width: 70%;">　　浏览器内核是多线程的，它包括了 GUI 渲染线程、JS 引擎线程、定时器触发线程、事件触发线程以及异步 HTTP 请求线程。我们今天所要讨论的事件循环就是事件触发线程的主要职责之一。<br>　　在浏览器中的事件循环过程如下：</p>
+<ol>
+<li>在所有的宏任务队列中选择一个最早进入的任务，如果没有可选的任务，则调到第 6 步</li>
+<li>将上一步选择的任务设置为 current running task</li>
+<li>运行被选择的任务</li>
+<li>运行结束后，设置 current running task 为空</li>
+<li>将运行过的 task 从任务队列中移除</li>
+<li>执行微任务队列中的所有微任务</li>
+<li>DOM 渲染</li>
+<li>回到第一步</li>
+</ol>
+<h3 id="Node-中的事件循环"><a href="#Node-中的事件循环" class="headerlink" title="Node 中的事件循环"></a>Node 中的事件循环</h3><p>　　Node 中的事件循环由 libuv 库实现，它为 Node 提供了跨平台、线程池、事件池、异步 IO 等能力，自然也是 event loop 的源泉。虽然在浏览器和 Node 中都实现了事件循环，但是实现手段不同，平台不同，所以也导致差异也是必然的。在 Node 中，事件循环主要有六个阶段：Timers、I/O callbacks、idle/prepare、poll、check、close callbacks。每一次事件循环都要跑完这六个阶段，每个阶段都有自己的回调函数队列，事件循环每进入一个阶段，就会执行里面所有的操作，直到队列为空或者回调函数执行数量达到最大限制，然后会清理微任务队列，再进入下一个阶段。</p>
+<ul>
+<li>阶段一：Timers。执行满足条件的 setTimeout，setInterval 回调。该阶段的队列我们称为 Timers Queue。</li>
+<li>阶段二：I/O callback。执行已完成的 I/O 操作的回调函数。该阶段的队列我们称为 I/O Queue。</li>
+<li>阶段三：idle，prepare（此阶段只在内部使用）</li>
+<li>阶段四：poll：获取新的 I/O 事件，适当的条件下 node 将阻塞在该阶段。该阶段在 I/O Queue 的范围内。</li>
+<li>阶段五：check：执行 setImmediate 的回调。该阶段的队列我们称为 Check Queue。</li>
+<li>阶段六：close callback。执行一些 onclose 事件的回调。该阶段的队列我们称为 Close Queue。</li>
+</ul>
+<h5 id="循环之前"><a href="#循环之前" class="headerlink" title="循环之前"></a>循环之前</h5><p>　　在进入第一次循环之前，会先进行如下操作：</p>
+<ul>
+<li>同步任务</li>
+<li>发出异步请求</li>
+<li>规划定时器的生效时间</li>
+<li>执行 process.nextTick()</li>
+</ul>
+<h5 id="开始循环"><a href="#开始循环" class="headerlink" title="开始循环"></a>开始循环</h5><p>　　按照我们的循环的6个阶段依次执行，每次拿出当前阶段中的全部任务执行，然后清空微任务队列（先清空 process.nextTick()，再清空其余微任务）。再执行下一阶段，全部6个阶段执行完毕后，进入下轮循环。即：</p>
+<ul>
+<li>清空当前循环内的 Timers Queue，清空微任务队列</li>
+<li>清空当前循环内的 I/O Queue，清空微任务队列</li>
+<li>清空当前循环内的 Check Queue，清空微任务队列</li>
+<li>清空当前循环内的 Close Queue，清空微任务队列</li>
+<li>进入下轮循环</li>
+</ul>
+<h5 id="伪代码"><a href="#伪代码" class="headerlink" title="伪代码"></a>伪代码</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">while (true) &#123;</span><br><span class="line">  loop.forEach((阶段) =&gt; &#123;</span><br><span class="line">    阶段全部任务()</span><br><span class="line">    nextTick全部任务()</span><br><span class="line">    microTask全部任务()</span><br><span class="line">  &#125;)</span><br><span class="line">  loop = loop.next</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="课后题"><a href="#课后题" class="headerlink" title="课后题"></a>课后题</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">setTimeout(() =&gt; console.log(&apos;setTimeout1&apos;), 0);</span><br><span class="line">setTimeout(() =&gt; &#123;</span><br><span class="line">    console.log(&apos;setTimeout2&apos;);</span><br><span class="line">    Promise.resolve().then(() =&gt; &#123;</span><br><span class="line">        console.log(&apos;promise3&apos;);</span><br><span class="line">        Promise.resolve().then(() =&gt; &#123;</span><br><span class="line">            console.log(&apos;promise4&apos;);</span><br><span class="line">        &#125;)</span><br><span class="line">        console.log(5)</span><br><span class="line">    &#125;)</span><br><span class="line">    setTimeout(() =&gt; console.log(&apos;setTimeout4&apos;), 0);</span><br><span class="line">&#125;, 0);</span><br><span class="line">setTimeout(() =&gt; console.log(&apos;setTimeout3&apos;), 0);</span><br><span class="line">Promise.resolve().then(() =&gt; &#123;</span><br><span class="line">    console.log(&apos;promise1&apos;);</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>　　浏览器中的事件循环过程如下：<br><img src="https://haitao.nos.netease.com/fdb31d95-19be-46fa-a7a7-e9b9fa7950f5_1292_1084.jpg" style="width: 70%;"><br>　　Node 中的事件循环过程如下：<br><img src="https://haitao.nos.netease.com/bea1944b-28e2-4c51-9bf1-5486c052ec12_1260_1110.jpg" style="width: 70%;"></p>
+<h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><ol>
+<li><a href="https://juejin.im/post/5a6547d0f265da3e283a1df7#heading-18" target="_blank" rel="noopener">从浏览器多进程到JS单线程，JS运行机制最全面的一次梳理</a></li>
+<li><a href="https://docs.google.com/presentation/d/1XkyQcB9c9DCrscvab2WxdfHz2SV_D9yDUwSFSHeM32A/edit#slide=id.g38844fb25d_0_265" target="_blank" rel="noopener">浏览器和 Node 中不同的Event Loop</a></li>
+<li><a href="https://juejin.im/post/5aa5dcabf265da239c7afe1e" target="_blank" rel="noopener">浏览器和Node不同的事件循环（Event Loop）</a></li>
+<li><a href="https://github.com/SunShinewyf/issue-blog/issues/34#issuecomment-371106502" target="_blank" rel="noopener">node中的Event模块(上）</a></li>
+</ol>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/06/22/flexible-js学习笔记/" rel="next" title="移动端小白的flexible.js学习笔记">
+                <i class="fa fa-chevron-left"></i> 移动端小白的flexible.js学习笔记
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/08/15/记-2018秋招腾讯面试经历/" rel="prev" title="记-2018秋招腾讯面试经历（已完结）">
+                记-2018秋招腾讯面试经历（已完结） <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Author</p>
+              <p class="site-description motion-element" itemprop="description">Talk is cheap, show me the code.</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">25</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/zhuyali" title="GitHub &rarr; https://github.com/zhuyali" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#macrotask-amp-microtask"><span class="nav-number">1.</span> <span class="nav-text">macrotask &amp; microtask</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#macrotask（宏任务）"><span class="nav-number">1.0.1.</span> <span class="nav-text">macrotask（宏任务）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#microtask（微任务）"><span class="nav-number">1.0.2.</span> <span class="nav-text">microtask（微任务）</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#浏览器中的事件循环"><span class="nav-number">2.</span> <span class="nav-text">浏览器中的事件循环</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Node-中的事件循环"><span class="nav-number">3.</span> <span class="nav-text">Node 中的事件循环</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#循环之前"><span class="nav-number">3.0.1.</span> <span class="nav-text">循环之前</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#开始循环"><span class="nav-number">3.0.2.</span> <span class="nav-text">开始循环</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#伪代码"><span class="nav-number">3.0.3.</span> <span class="nav-text">伪代码</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#课后题"><span class="nav-number">4.</span> <span class="nav-text">课后题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考资料"><span class="nav-number">5.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Author</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v7.0.0</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="Total Visitors">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="Total Views">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=7.0.0"></script>
+
+  <script src="/js/src/motion.js?v=7.0.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/schemes/muse.js?v=7.0.0"></script>
+
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=7.0.0"></script>
+<script src="/js/src/post-details.js?v=7.0.0"></script>
+
+
+
+  
+
+
+  <script src="/js/src/bootstrap.js?v=7.0.0"></script>
+
+
+  
+  
+  
+  <script id="dsq-count-scr" src="https://zhuyali.disqus.com/count.js" async></script>
+
+
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://zhuyali.github.io/2018/08/02/浏览器和Node中不同的Event-Loop/";
+    this.page.identifier = "2018/08/02/浏览器和Node中不同的Event-Loop/";
+    this.page.title = '浏览器和Node中不同的Event Loop';
+    };
+  function loadComments() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://zhuyali.disqus.com/embed.js';
+    s.setAttribute('data-timestamp', '' + +new Date());
+    (d.head || d.body).appendChild(s);
+  }
+  
+    loadComments();
+  
+</script>
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

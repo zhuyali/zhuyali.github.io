@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222"/>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2"/>
+
+<link rel="stylesheet" href="/css/main.css?v=7.0.0"/>
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.0.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.0.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '7.0.0',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false,"dimmer":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="硬绑定函数绑定丢失问题　　在之前的文章飘忽不定的 this中详细介绍过 this 的绑定规则，并且在一个栗子部分分析了绑定丢失的问题，这里重新回顾一下。先看以下的代码：1234567891011function foo() &amp;#123;    console.log(this.a);&amp;#125;var obj = &amp;#123;    a: 2,    foo: foo&amp;#125;;var bar">
+<meta property="og:type" content="article">
+<meta property="og:title" content="underscore(1.9.0)源码阅读系列-硬绑定函数背后的故事">
+<meta property="og:url" content="https://zhuyali.github.io/2018/05/24/underscore源码阅读系列-硬绑定函数背后的故事/index.html">
+<meta property="og:site_name" content="一只大阿瓜の博客">
+<meta property="og:description" content="硬绑定函数绑定丢失问题　　在之前的文章飘忽不定的 this中详细介绍过 this 的绑定规则，并且在一个栗子部分分析了绑定丢失的问题，这里重新回顾一下。先看以下的代码：1234567891011function foo() &amp;#123;    console.log(this.a);&amp;#125;var obj = &amp;#123;    a: 2,    foo: foo&amp;#125;;var bar">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-02-27T08:54:02.547Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="underscore(1.9.0)源码阅读系列-硬绑定函数背后的故事">
+<meta name="twitter:description" content="硬绑定函数绑定丢失问题　　在之前的文章飘忽不定的 this中详细介绍过 this 的绑定规则，并且在一个栗子部分分析了绑定丢失的问题，这里重新回顾一下。先看以下的代码：1234567891011function foo() &amp;#123;    console.log(this.a);&amp;#125;var obj = &amp;#123;    a: 2,    foo: foo&amp;#125;;var bar">
+
+
+
+
+
+
+  <link rel="canonical" href="https://zhuyali.github.io/2018/05/24/underscore源码阅读系列-硬绑定函数背后的故事/"/>
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>underscore(1.9.0)源码阅读系列-硬绑定函数背后的故事 | 一只大阿瓜の博客</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">一只大阿瓜の博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br/>Home</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br/>Archives</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br/>About</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zhuyali.github.io/2018/05/24/underscore源码阅读系列-硬绑定函数背后的故事/"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Author"/>
+      <meta itemprop="description" content="Talk is cheap, show me the code."/>
+      <meta itemprop="image" content="/images/avatar.gif"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一只大阿瓜の博客"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">underscore(1.9.0)源码阅读系列-硬绑定函数背后的故事
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Post created:2018-05-24 19:38:23" itemprop="dateCreated datePublished" datetime="2018-05-24T19:38:23+08:00">2018-05-24</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Post modified:2019-02-27 16:54:02" itemprop="dateModified" datetime="2019-02-27T16:54:02+08:00">2019-02-27</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+              
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">Comments:</span>
+                <a href="/2018/05/24/underscore源码阅读系列-硬绑定函数背后的故事/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/05/24/underscore源码阅读系列-硬绑定函数背后的故事/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             Views: 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="硬绑定函数"><a href="#硬绑定函数" class="headerlink" title="硬绑定函数"></a>硬绑定函数</h3><h4 id="绑定丢失问题"><a href="#绑定丢失问题" class="headerlink" title="绑定丢失问题"></a>绑定丢失问题</h4><p>　　在之前的文章<a href="http://zhuyali.github.io/2018/01/11/%E9%A3%98%E5%BF%BD%E4%B8%8D%E5%AE%9A%E7%9A%84-this/">飘忽不定的 this</a>中详细介绍过 this 的绑定规则，并且在<em>一个栗子</em>部分分析了绑定丢失的问题，这里重新回顾一下。先看以下的代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">function foo() &#123;</span><br><span class="line">    console.log(this.a);</span><br><span class="line">&#125;</span><br><span class="line">var obj = &#123;</span><br><span class="line">    a: 2,</span><br><span class="line">    foo: foo</span><br><span class="line">&#125;;</span><br><span class="line">var bar = obj.foo;</span><br><span class="line">var a = &apos;oops, global&apos;;</span><br><span class="line">obj.foo(); // 2</span><br><span class="line">bar(); // &apos;oops, global&apos;</span><br></pre></td></tr></table></figure></p>
+<p>　　obj.foo() 应用了隐式绑定的规则，所以 foo 中的 this 指向了 obj 对象。而 bar 虽然是 obj.foo 的一个引用，但是实际上，他引用的是 foo 函数本身，因此此时的 bar() 其实是一个不带任何修饰的函数调用，跟直接调用 foo() 没什么差别，因此使用了默认绑定，其中的 this 指向了全局对象。<br>　　之所以重温这部分，是为了引出后文。JavaScript 原生提供了可以解决绑定丢失问题的方法，那就是 Function.proptotype.bind。</p>
+<h4 id="Function-prototype-bind"><a href="#Function-prototype-bind" class="headerlink" title="Function.prototype.bind"></a>Function.prototype.bind</h4><p>　　<a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Function/bind" target="_blank" rel="noopener">MDN</a>上对于 bind 的方法的介绍是：bind() 方法创建一个新的函数，当被调用时，将其 this 关键字设置为提供的值，同时也接受预设的参数提供给原函数。从定义上来看，bind 函数可以绑定一个函数的 this 使其不动态的变化，我们来使用 bind 函数解决上面的绑定丢失的问题。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">function foo() &#123;</span><br><span class="line">    console.log(this.a);</span><br><span class="line">&#125;</span><br><span class="line">var obj = &#123;</span><br><span class="line">    a: 2,</span><br><span class="line">    foo: foo</span><br><span class="line">&#125;;</span><br><span class="line">var bar = obj.foo.bind(obj);</span><br><span class="line">var a = &apos;oops, global&apos;;</span><br><span class="line">obj.foo(); // 2</span><br><span class="line">bar(); // 2</span><br></pre></td></tr></table></figure></p>
+<p>　　bind 函数会返回一个硬编码的函数，它在原始函数的基础上绑定了函数的上下文 this，这种机制被称为硬绑定，是显示绑定的一种。</p>
+<p>注：但是 bind 绑定的 this 也不是不会变的，当可以应用多条绑定规则时，this 绑定的优先级为：new 绑定 &gt; 显示绑定 &gt; 隐式绑定 &gt; 默认绑定。</p>
+<h3 id="underscore-中的硬绑定函数"><a href="#underscore-中的硬绑定函数" class="headerlink" title="underscore 中的硬绑定函数"></a>underscore 中的硬绑定函数</h3><p>　　在 underscore 中，实现了一个类似于原生 Function.prototype.bind 的函数 <em>.bind，不过原生的 bind() 函数在 ECMA-262 第五版才被加入，可能无法在所有的浏览器上运行；相较来说，</em>.bind 可以兼容各个浏览器。下面简单介绍一下 _.bind：<br>　　_.bind(function, object, <em>arguments) 绑定函数 function 到对象 object 上，也就是无论何时调用函数，函数里的 this 都指向这个 object，任意可选参数 </em>arguments 的目的是函数柯里化，与本节内容关系不大，暂且不聊。它的用法为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">var func = function(greeting)&#123; return greeting + &apos;: &apos; + this.name &#125;;</span><br><span class="line">func = _.bind(func, &#123;name: &apos;moe&apos;&#125;, &apos;hi&apos;);</span><br><span class="line">func();</span><br><span class="line">=&gt; &apos;hi: moe&apos;</span><br></pre></td></tr></table></figure></p>
+<h3 id="bind-的具体实现"><a href="#bind-的具体实现" class="headerlink" title="_.bind 的具体实现"></a>_.bind 的具体实现</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">_.bind = restArguments(function(func, context, args) &#123;</span><br><span class="line">  if (!_.isFunction(func)) throw new TypeError(&apos;Bind must be called on a function&apos;);</span><br><span class="line">  var bound = restArguments(function(callArgs) &#123;</span><br><span class="line">    return executeBound(func, bound, context, this, args.concat(callArgs));</span><br><span class="line">  &#125;);</span><br><span class="line">  return bound;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<p>　　上面的代码中，restArguments 是为了格式化参数的，它的返回值是一个函数。以 _.bind 为例，如果我们调用了 _.bind(bindFunc, bindContext, arg1, arg2…)，实际上会调用传入 restArguments 的第一个函数参数，这个函数中的参数会被进行格式化：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">_.bind = restArguments(function(func, context, args) &#123;</span><br><span class="line">  // 进入该函数之后</span><br><span class="line">  // func 引用的是 bindFunc</span><br><span class="line">  // context 引用的是 bindContext</span><br><span class="line">  // args 是一个数组，形式为[arg1, arg2...]</span><br><span class="line">  // restArguments 把最后一个参数作为数组形式，可以容纳任意数量的参数</span><br><span class="line">  // 可以得出结论：restArguments 适合那些传任意多参数的情况</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<p>　　刚刚提到，调用 _.bind 时实际上会调用传入 restArguments 的内部匿名函数，所以我们来分析这个内部匿名函数：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">function(func, context, args) &#123;</span><br><span class="line">  // 首先进行参数有效性判断，func 必须是一个函数</span><br><span class="line">  if (!_.isFunction(func)) throw new TypeError(&apos;Bind must be called on a function&apos;);</span><br><span class="line">  // args 是柯里化参数，是个数组</span><br><span class="line">  var bound = restArguments(function(callArgs) &#123;</span><br><span class="line">    return executeBound(func, bound, context, this, args.concat(callArgs));</span><br><span class="line">  &#125;);</span><br><span class="line">  return bound;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>　　这个函数的返回值是 bound 函数，也就是说我们在调用由 _.bind 生成的函数时，实际上是调用了 bound 函数。这个 bound 函数也是由 restArguments 生成的，同理，在调用 bound 函数时实际调用了传入 restArguments 的内部匿名函数，并且该函数的参数被格式化成了一个数组，而该匿名函数的返回值是 <code>executeBound(func, bound, context, this, args.concat(callArgs))</code>，这个返回值也就是我们最后调用 _.bind 生成的函数时得到的结果。<br>　　至此，我们先整理一下思路，调用 _.bind 返回了函数 bound，调用 bound 返回了 executeBound(func, bound, context, this, args.concat(callArgs))。接下来我们把重点放在 executeBound 函数上。</p>
+<h3 id="核心函数-executeBound"><a href="#核心函数-executeBound" class="headerlink" title="核心函数 executeBound"></a>核心函数 executeBound</h3><p>　　在继续之前，想先强调至关重要的一点：调用 _.bind 返回的是一个函数，是函数就意味着它既可以被普通调用，也可以被 new 调用，因此上面提到的 bound 函数，既可以 bound(…)，也可以 new bound(…)。明确这一点之后我们来看 executeBound 的源码。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">var executeBound = function(sourceFunc, boundFunc, context, callingContext, args) &#123;</span><br><span class="line">  if (!(callingContext instanceof boundFunc)) &#123;</span><br><span class="line">      return sourceFunc.apply(context, args);</span><br><span class="line">  &#125;</span><br><span class="line">  // 使用 bound 实例化出来的对象</span><br><span class="line">  // 接下来经历 new 过程时发生的事情</span><br><span class="line">  // 1.创建一个继承自 sourceFunc 的对象</span><br><span class="line">  // 2.绑定新创建的对象到 this</span><br><span class="line">  var self = baseCreate(sourceFunc.prototype);</span><br><span class="line">  var result = sourceFunc.apply(self, args);</span><br><span class="line">  // 如果 sourceFunc 没有返回一个对象的话，默认就返回继承自 sourceFunc 的对象</span><br><span class="line">  if (_.isObject(result)) return result;</span><br><span class="line">  return self;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p>　　executeBound 接受五个参数：sourceFunc 代表原始被 bind 的函数，boundFunc 就是 _.bind 的返回函数 bound，context 代表传给原始函数的上下文，callingContext 代表调用 bound 函数时候的上下文，args 代表要传入 sourceFunc 的参数。</p>
+<h4 id="普通调用"><a href="#普通调用" class="headerlink" title="普通调用"></a>普通调用</h4><p>　　普通调用下 !(callingContext instanceof boundFunc) 条件永远成立，所以会直接进入分支，返回 sourceFunc.apply(context, args)，这里会绑定 sourceFunc 的上下文到 context 并执行 sourceFunc(args[0], args[1]…)。</p>
+<h4 id="new-调用"><a href="#new-调用" class="headerlink" title="new 调用"></a>new 调用</h4><p>　　new 调用会创建一个 bound 的实例，并且把 this 绑定到这个实例上，此时 !(callingContext instanceof boundFunc) 条件不成立，会继续向下执行，构造一个原始函数的实例。因为这里其实是在模仿真实的 new 过程，不妨先去看看之前我写的一篇文章<a href="http://zhuyali.github.io/2018/01/12/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E7%9A%84JS/">面向对象的JS</a>中构造器方式构造对象的部分。首先会创建一个 sourceFunc 的实例 self，这里的 baseCreate 等价于 Object.create(sourceFunc.prototype)，创建出的实例拥有 sourceFunc.prototype 上的所有属性和方法；然后接下来绑定 sourceFunc 的 this 到创建出的实例上并调用 sourceFunc 得到 result；这个得到的 result 完全取决于 sourceFunc 的返回值，可能是任何类型，但是当且仅当在 result 是个对象的时候返回 result，否则返回的是创建出的那个实例。</p>
+<h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><p>你不知道的JavaScript（上卷）</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/05/22/underscore源码阅读系列-从分组函数领略闭包之美/" rel="next" title="underscore(1.9.0)源码阅读系列-从分组函数领略闭包之美">
+                <i class="fa fa-chevron-left"></i> underscore(1.9.0)源码阅读系列-从分组函数领略闭包之美
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/05/29/underscore源码阅读系列-迭代与递归/" rel="prev" title="underscore(1.9.0)源码阅读系列-迭代与递归">
+                underscore(1.9.0)源码阅读系列-迭代与递归 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Author</p>
+              <p class="site-description motion-element" itemprop="description">Talk is cheap, show me the code.</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">25</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/zhuyali" title="GitHub &rarr; https://github.com/zhuyali" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#硬绑定函数"><span class="nav-number">1.</span> <span class="nav-text">硬绑定函数</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#绑定丢失问题"><span class="nav-number">1.1.</span> <span class="nav-text">绑定丢失问题</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Function-prototype-bind"><span class="nav-number">1.2.</span> <span class="nav-text">Function.prototype.bind</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#underscore-中的硬绑定函数"><span class="nav-number">2.</span> <span class="nav-text">underscore 中的硬绑定函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#bind-的具体实现"><span class="nav-number">3.</span> <span class="nav-text">_.bind 的具体实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#核心函数-executeBound"><span class="nav-number">4.</span> <span class="nav-text">核心函数 executeBound</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#普通调用"><span class="nav-number">4.1.</span> <span class="nav-text">普通调用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#new-调用"><span class="nav-number">4.2.</span> <span class="nav-text">new 调用</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考资料"><span class="nav-number">5.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Author</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v7.0.0</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="Total Visitors">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="Total Views">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=7.0.0"></script>
+
+  <script src="/js/src/motion.js?v=7.0.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/schemes/muse.js?v=7.0.0"></script>
+
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=7.0.0"></script>
+<script src="/js/src/post-details.js?v=7.0.0"></script>
+
+
+
+  
+
+
+  <script src="/js/src/bootstrap.js?v=7.0.0"></script>
+
+
+  
+  
+  
+  <script id="dsq-count-scr" src="https://zhuyali.disqus.com/count.js" async></script>
+
+
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://zhuyali.github.io/2018/05/24/underscore源码阅读系列-硬绑定函数背后的故事/";
+    this.page.identifier = "2018/05/24/underscore源码阅读系列-硬绑定函数背后的故事/";
+    this.page.title = 'underscore(1.9.0)源码阅读系列-硬绑定函数背后的故事';
+    };
+  function loadComments() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://zhuyali.disqus.com/embed.js';
+    s.setAttribute('data-timestamp', '' + +new Date());
+    (d.head || d.body).appendChild(s);
+  }
+  
+    loadComments();
+  
+</script>
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

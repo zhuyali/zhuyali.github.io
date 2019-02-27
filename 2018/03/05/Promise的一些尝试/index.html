@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222"/>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2"/>
+
+<link rel="stylesheet" href="/css/main.css?v=7.0.0"/>
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.0.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.0.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '7.0.0',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false,"dimmer":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="前言　　该文章不是 Promise 入门，不涉及基础讲解，只是博主对 Promise 的一些想法和尝试而已。 Promise 基本用法 Promise 是一个容器，里面保存着某个未来才会结束的事件。当这个未来事件结束后，可以通过 resolve 函数和 reject 函数来改变 Promise 的状态，使它可以继续执行依赖该异步结果的代码（即 then 中或 catch 中的代码）  Promis">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Promise的一些尝试">
+<meta property="og:url" content="https://zhuyali.github.io/2018/03/05/Promise的一些尝试/index.html">
+<meta property="og:site_name" content="一只大阿瓜の博客">
+<meta property="og:description" content="前言　　该文章不是 Promise 入门，不涉及基础讲解，只是博主对 Promise 的一些想法和尝试而已。 Promise 基本用法 Promise 是一个容器，里面保存着某个未来才会结束的事件。当这个未来事件结束后，可以通过 resolve 函数和 reject 函数来改变 Promise 的状态，使它可以继续执行依赖该异步结果的代码（即 then 中或 catch 中的代码）  Promis">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-02-27T08:08:18.711Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Promise的一些尝试">
+<meta name="twitter:description" content="前言　　该文章不是 Promise 入门，不涉及基础讲解，只是博主对 Promise 的一些想法和尝试而已。 Promise 基本用法 Promise 是一个容器，里面保存着某个未来才会结束的事件。当这个未来事件结束后，可以通过 resolve 函数和 reject 函数来改变 Promise 的状态，使它可以继续执行依赖该异步结果的代码（即 then 中或 catch 中的代码）  Promis">
+
+
+
+
+
+
+  <link rel="canonical" href="https://zhuyali.github.io/2018/03/05/Promise的一些尝试/"/>
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Promise的一些尝试 | 一只大阿瓜の博客</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">一只大阿瓜の博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br/>Home</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br/>Archives</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br/>About</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zhuyali.github.io/2018/03/05/Promise的一些尝试/"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Author"/>
+      <meta itemprop="description" content="Talk is cheap, show me the code."/>
+      <meta itemprop="image" content="/images/avatar.gif"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一只大阿瓜の博客"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Promise的一些尝试
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Post created:2018-03-05 16:35:33" itemprop="dateCreated datePublished" datetime="2018-03-05T16:35:33+08:00">2018-03-05</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Post modified:2019-02-27 16:08:18" itemprop="dateModified" datetime="2019-02-27T16:08:18+08:00">2019-02-27</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+              
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">Comments:</span>
+                <a href="/2018/03/05/Promise的一些尝试/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/03/05/Promise的一些尝试/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             Views: 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>　　该文章不是 Promise 入门，不涉及基础讲解，只是博主对 Promise 的一些想法和尝试而已。</p>
+<h3 id="Promise-基本用法"><a href="#Promise-基本用法" class="headerlink" title="Promise 基本用法"></a>Promise 基本用法</h3><ul>
+<li><p><strong>Promise 是一个容器，里面保存着某个未来才会结束的事件。当这个未来事件结束后，可以通过 resolve 函数和 reject 函数来改变 Promise 的状态，使它可以继续执行依赖该异步结果的代码（即 then 中或 catch 中的代码）</strong></p>
+</li>
+<li><p><strong>Promise 共有三种状态：pending（进行中），fulfilled（已成功）和 rejected（已失败），只有异步操作的结果能够决定当前是哪一种状态，并且一旦决定，就无法再改变</strong></p>
+</li>
+<li><p><strong>Promise 一旦新建就会立即执行，无法中途取消</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">let promise = new Promise(function(resolve, reject) &#123;</span><br><span class="line">  console.log(&apos;Promise&apos;);</span><br><span class="line">  resolve();</span><br><span class="line">&#125;);</span><br><span class="line">promise.then(function() &#123;</span><br><span class="line">  console.log(&apos;resolved.&apos;);</span><br><span class="line">&#125;);</span><br><span class="line">console.log(&apos;Hi!&apos;);</span><br><span class="line">// Promise</span><br><span class="line">// Hi!</span><br><span class="line">// resolved</span><br><span class="line">// 通过上面的输出顺序可以看出，Promise 是立即执行的，而 then 中的回调函数会在同步代码都执行完毕后才会执行</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>如果不设置回调函数，Promise 内部抛出的错误不会反应到外部。Promise 内部的错误包括两种：一是 throw 出来的异常，二是调用 reject</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">let promise = new Promise(function(resolve, reject) &#123;</span><br><span class="line">  reject(&apos;error&apos;); // or throw new Error(&apos;error&apos;);</span><br><span class="line">&#125;);</span><br><span class="line">console.log(&apos;Hi!&apos;);</span><br><span class="line">// Promise 内部抛出的错误并不会影响后续代码的执行，还是会输出 Hi!</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Promise 中调用 resolve 和 reject 时都可以传入参数，这个参数会被传递给回调函数。如果该参数是一个 Promise，那么原 Promise 的状态就无效了，而是由传入的 Promise 的状态来决定</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">const p1 = new Promise(function(resolve, reject) &#123;</span><br><span class="line">  setTimeout(() =&gt; reject(new Error(&apos;fail&apos;)), 3000)</span><br><span class="line">&#125;)</span><br><span class="line">const p2 = new Promise(function(resolve, reject) &#123;</span><br><span class="line">  setTimeout(() =&gt; resolve(p1), 1000)</span><br><span class="line">&#125;)</span><br><span class="line">p2</span><br><span class="line">  .then(result =&gt; console.log(result))</span><br><span class="line">  .catch(error =&gt; console.log(error))</span><br><span class="line">// Error: fail</span><br><span class="line">// 此时 p2 本身的状态无效，而是要依赖于 p1 的状态</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>Promise 并不会因 resolve 或 reject 函数的调用而终止自身的立即执行</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">new Promise(function(resolve, reject) &#123;</span><br><span class="line">  resolve(1);</span><br><span class="line">  console.log(2);</span><br><span class="line">&#125;).then(r =&gt; &#123;</span><br><span class="line">  console.log(r);</span><br><span class="line">&#125;);</span><br><span class="line">// 2</span><br><span class="line">// 1</span><br><span class="line">// 在 Promise 内部的代码都是立即执行的，不管它是否位于 resolve 之后</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="Promise-原型函数"><a href="#Promise-原型函数" class="headerlink" title="Promise 原型函数"></a>Promise 原型函数</h3><h4 id="Promise-prototype-then"><a href="#Promise-prototype-then" class="headerlink" title="Promise.prototype.then()"></a>Promise.prototype.then()</h4><ul>
+<li><p><strong>then 可以接受两个参数，第一个参数是 resolved 状态的回调函数，第二个参数（可选）是 rejected 状态的回调函数</strong></p>
+</li>
+<li><p><strong>返回一个新的 Promise 实例，所以可以进行链式调用 then，后续 then 中回调函数所接受的参数来源于之前 then 中的返回值。如果这个返回值是非 Promise，那么会直接传给 resolve 回调函数；如果这个返回值是 Promise，那么则需要等待该 Promise 的状态改变</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">new Promise(function(resolve, reject) &#123;</span><br><span class="line">  resolve(&apos;外层 resolve&apos;);</span><br><span class="line">&#125;).then(val =&gt; &#123;</span><br><span class="line">  console.log(val);</span><br><span class="line">  return new Promise(function(resolve, reject) &#123;</span><br><span class="line">    resolve(&apos;内部 resolve&apos;);</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;).then(val =&gt; &#123;</span><br><span class="line">  console.log(val);</span><br><span class="line">&#125;)</span><br><span class="line">// 外层 resolve</span><br><span class="line">// 内部 resolve</span><br><span class="line">// 后面输出内部 resolve，说明它等待了上一个 then 中返回的 Promise 的状态改变</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h4 id="Promise-prototype-catch"><a href="#Promise-prototype-catch" class="headerlink" title="Promise.prototype.catch()"></a>Promise.prototype.catch()</h4><ul>
+<li><p><strong>Promise.prototype.catch 方法是 .then(null, rejection) 的别名，用于指定错误发生时的回调函数</strong></p>
+</li>
+<li><p><strong>Promise 对象的错误具有“冒泡”性质，会一直向后传递，直到被捕获为止</strong></p>
+</li>
+<li><p><strong>总是使用 catch 方法代替 then 方法的第二个参数，因为 catch 还可以捕获前面 then 方法执行中的错误</strong></p>
+</li>
+<li><p><strong>catch 返回的也是一个 Promise 对象，所以后面可以继续链式调用 then 或者 catch</strong></p>
+</li>
+</ul>
+<h3 id="Promise-静态函数"><a href="#Promise-静态函数" class="headerlink" title="Promise 静态函数"></a>Promise 静态函数</h3><h4 id="Promise-all"><a href="#Promise-all" class="headerlink" title="Promise.all()"></a>Promise.all()</h4><ul>
+<li><p><strong>接受的参数往往是一个 Promise 实例数组。如果不是数组，也可以是任何具有 Iterator 接口的迭代器；如果不是 Promise 实例，则会先调用 <code>Promise.resolve</code>方法将参数转为 Promise 实例</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Promise.all([1, 2, 3])</span><br><span class="line">  .then(val =&gt; &#123;</span><br><span class="line">    console.log(val);</span><br><span class="line">  &#125;);</span><br><span class="line">// [ 1, 2, 3 ]</span><br><span class="line">// 等价于</span><br><span class="line">Promise.all([Promise.resolve(1), Promise.resolve(2), Promise.resolve(3)])</span><br><span class="line">  .then(val =&gt; &#123;</span><br><span class="line">    console.log(val);</span><br><span class="line">  &#125;);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>返回一个新的 Promise（后面称为 p）。只有当传入的 Promise 实例都变成 fulfilled 状态，p 的状态才会变成 fulfilled；否则，如果传入的 Promise 实例有一个被 rejected，p 的状态就变成 rejected</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">const p1 = new Promise((resolve, reject) =&gt; &#123;</span><br><span class="line">  resolve(&apos;hello&apos;);</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">const p2 = new Promise((resolve, reject) =&gt; &#123;</span><br><span class="line">  throw new Error(&apos;报错了&apos;);</span><br><span class="line">&#125;)</span><br><span class="line">.catch(e =&gt; e);</span><br><span class="line"></span><br><span class="line">Promise.all([p1, p2])</span><br><span class="line">.then(result =&gt; console.log(result))</span><br><span class="line">.catch(e =&gt; console.log(e));</span><br><span class="line">// [&quot;hello&quot;, Error: 报错了]</span><br><span class="line">// 上面的情况其实是进入了 then 方法中。原因是虽然 p2 定义的 Promise 状态变为 rejected 中了，但是其中最终传入 Promise.all() 的 p2 是 catch 方法的返回值</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>返回的新的 Promise 实例 p 后的 then 也接受两个回调函数作为参数。如果是 fulfilled 的状态，那么回调函数参数为传入的 Promise 实例的返回值组成的数组；如果是 rejected 的状态，那么回调函数为第一个被 rejected 的实例的返回值</strong></p>
+</li>
+</ul>
+<h4 id="Promise-resolve"><a href="#Promise-resolve" class="headerlink" title="Promise.resolve()"></a>Promise.resolve()</h4><ul>
+<li><p><strong>一般用于将现有对象转为 Promise 对象</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Promise.resolve(&apos;foo&apos;);</span><br><span class="line">// 等价于</span><br><span class="line">new Promise(resolve =&gt; resolve(&apos;foo&apos;));</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>立即 resolve 的 Promise 对象，是在本轮“事件循环”结束时而不是下一轮“事件循环”的开始时</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">setTimeout(function () &#123;</span><br><span class="line">  console.log(&apos;three&apos;);</span><br><span class="line">&#125;, 0);</span><br><span class="line">Promise.resolve().then(function () &#123;</span><br><span class="line">  console.log(&apos;two&apos;);</span><br><span class="line">&#125;);</span><br><span class="line">console.log(&apos;one&apos;);</span><br><span class="line">// one</span><br><span class="line">// two</span><br><span class="line">// three</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h3 id="扩展题目"><a href="#扩展题目" class="headerlink" title="扩展题目"></a>扩展题目</h3><p>// 实现一个方法 parallel(tasks, concurrency)，让 tasks 并发执行（并控制并发数为 concurrency)<br>// 其中 tasks 为一个数组，每一个元素都是一个方法返回一个 promise<br>// 当所有 tasks 执行完成时，resolve 一个数组保存所有的结果<br>// 当任意一个 task 执行失败时，reject 这个错误</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">const assert = require(&apos;assert&apos;);</span><br><span class="line"></span><br><span class="line">function task(input) &#123;</span><br><span class="line">  return new Promise(resolve =&gt; &#123;</span><br><span class="line">    setTimeout(() =&gt; resolve(input), 1000);</span><br><span class="line">  &#125;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">parallel([</span><br><span class="line">  task(1),</span><br><span class="line">  task(2),</span><br><span class="line">  task(3),</span><br><span class="line">  task(4),</span><br><span class="line">  task(5),</span><br><span class="line">], 2)</span><br><span class="line">.then(res =&gt; assert.deepEqual(res, [1, 2, 3, 4, 5]));</span><br><span class="line"></span><br><span class="line">function parallel(tasks, concurrency) &#123;</span><br><span class="line">  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>　　参考答案如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">function parallel(tasks, concurrency) &#123;</span><br><span class="line">  let concurrentTasks = tasks.slice(0, concurrency);</span><br><span class="line">  tasks = tasks.slice(concurrency);</span><br><span class="line">  let promise = new Promise((resolve, reject) =&gt; &#123;</span><br><span class="line">    const results = [];</span><br><span class="line">    for (let i = 0; i &lt; concurrency; i++) &#123;</span><br><span class="line">      concurrentTasks[i].then(done, error);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    function done(result) &#123;</span><br><span class="line">      results.push(result);</span><br><span class="line">      const task = tasks.shift();</span><br><span class="line">      if (task) &#123;</span><br><span class="line">        task.then(done, error);</span><br><span class="line">      &#125; else &#123;</span><br><span class="line">        resolve(results);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    function error(err) &#123;</span><br><span class="line">      reject(err);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;);</span><br><span class="line">  return promise;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><p><a href="http://es6.ruanyifeng.com/" target="_blank" rel="noopener">ECMAScript 6 入门</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/02/26/异步编程通用解决方案/" rel="next" title="异步编程通用解决方案">
+                <i class="fa fa-chevron-left"></i> 异步编程通用解决方案
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/03/07/CSS魔法篇之flex布局/" rel="prev" title="CSS魔法篇之flex布局">
+                CSS魔法篇之flex布局 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Author</p>
+              <p class="site-description motion-element" itemprop="description">Talk is cheap, show me the code.</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">25</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/zhuyali" title="GitHub &rarr; https://github.com/zhuyali" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Promise-基本用法"><span class="nav-number">2.</span> <span class="nav-text">Promise 基本用法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Promise-原型函数"><span class="nav-number">3.</span> <span class="nav-text">Promise 原型函数</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Promise-prototype-then"><span class="nav-number">3.1.</span> <span class="nav-text">Promise.prototype.then()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Promise-prototype-catch"><span class="nav-number">3.2.</span> <span class="nav-text">Promise.prototype.catch()</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Promise-静态函数"><span class="nav-number">4.</span> <span class="nav-text">Promise 静态函数</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Promise-all"><span class="nav-number">4.1.</span> <span class="nav-text">Promise.all()</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Promise-resolve"><span class="nav-number">4.2.</span> <span class="nav-text">Promise.resolve()</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#扩展题目"><span class="nav-number">5.</span> <span class="nav-text">扩展题目</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考资料"><span class="nav-number">6.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Author</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v7.0.0</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="Total Visitors">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="Total Views">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=7.0.0"></script>
+
+  <script src="/js/src/motion.js?v=7.0.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/schemes/muse.js?v=7.0.0"></script>
+
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=7.0.0"></script>
+<script src="/js/src/post-details.js?v=7.0.0"></script>
+
+
+
+  
+
+
+  <script src="/js/src/bootstrap.js?v=7.0.0"></script>
+
+
+  
+  
+  
+  <script id="dsq-count-scr" src="https://zhuyali.disqus.com/count.js" async></script>
+
+
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://zhuyali.github.io/2018/03/05/Promise的一些尝试/";
+    this.page.identifier = "2018/03/05/Promise的一些尝试/";
+    this.page.title = 'Promise的一些尝试';
+    };
+  function loadComments() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://zhuyali.disqus.com/embed.js';
+    s.setAttribute('data-timestamp', '' + +new Date());
+    (d.head || d.body).appendChild(s);
+  }
+  
+    loadComments();
+  
+</script>
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

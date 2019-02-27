@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222"/>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2"/>
+
+<link rel="stylesheet" href="/css/main.css?v=7.0.0"/>
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.0.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.0.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '7.0.0',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false,"dimmer":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="腾讯一面 闭包的产生，弊端及使用场景 跨域解决方案以及 JSONP 的具体使用 盒模型 块级盒子和行内盒子的差别？ HTTP 和 HTTPS 的差别？HTTPS 什么场景下就会不安全？HTTPS 有什么弊端？如何改进这种弊端？ COMMONJS 和 ES6 的模块之间有什么不同 REM 的使用场景，如何设置 font-size 的值 HTTP 请求方式有哪些？说一下 GET 和 POST 请求的差">
+<meta property="og:type" content="article">
+<meta property="og:title" content="记-2018秋招腾讯面试经历（已完结）">
+<meta property="og:url" content="https://zhuyali.github.io/2018/08/15/记-2018秋招腾讯面试经历/index.html">
+<meta property="og:site_name" content="一只大阿瓜の博客">
+<meta property="og:description" content="腾讯一面 闭包的产生，弊端及使用场景 跨域解决方案以及 JSONP 的具体使用 盒模型 块级盒子和行内盒子的差别？ HTTP 和 HTTPS 的差别？HTTPS 什么场景下就会不安全？HTTPS 有什么弊端？如何改进这种弊端？ COMMONJS 和 ES6 的模块之间有什么不同 REM 的使用场景，如何设置 font-size 的值 HTTP 请求方式有哪些？说一下 GET 和 POST 请求的差">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-02-27T08:08:18.717Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="记-2018秋招腾讯面试经历（已完结）">
+<meta name="twitter:description" content="腾讯一面 闭包的产生，弊端及使用场景 跨域解决方案以及 JSONP 的具体使用 盒模型 块级盒子和行内盒子的差别？ HTTP 和 HTTPS 的差别？HTTPS 什么场景下就会不安全？HTTPS 有什么弊端？如何改进这种弊端？ COMMONJS 和 ES6 的模块之间有什么不同 REM 的使用场景，如何设置 font-size 的值 HTTP 请求方式有哪些？说一下 GET 和 POST 请求的差">
+
+
+
+
+
+
+  <link rel="canonical" href="https://zhuyali.github.io/2018/08/15/记-2018秋招腾讯面试经历/"/>
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>记-2018秋招腾讯面试经历（已完结） | 一只大阿瓜の博客</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">一只大阿瓜の博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br/>Home</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br/>Archives</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br/>About</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zhuyali.github.io/2018/08/15/记-2018秋招腾讯面试经历/"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Author"/>
+      <meta itemprop="description" content="Talk is cheap, show me the code."/>
+      <meta itemprop="image" content="/images/avatar.gif"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一只大阿瓜の博客"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">记-2018秋招腾讯面试经历（已完结）
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Post created:2018-08-15 09:32:47" itemprop="dateCreated datePublished" datetime="2018-08-15T09:32:47+08:00">2018-08-15</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Post modified:2019-02-27 16:08:18" itemprop="dateModified" datetime="2019-02-27T16:08:18+08:00">2019-02-27</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+              
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">Comments:</span>
+                <a href="/2018/08/15/记-2018秋招腾讯面试经历/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/08/15/记-2018秋招腾讯面试经历/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             Views: 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="腾讯一面"><a href="#腾讯一面" class="headerlink" title="腾讯一面"></a>腾讯一面</h2><ol>
+<li>闭包的产生，弊端及使用场景</li>
+<li>跨域解决方案以及 JSONP 的具体使用</li>
+<li>盒模型</li>
+<li>块级盒子和行内盒子的差别？</li>
+<li>HTTP 和 HTTPS 的差别？HTTPS 什么场景下就会不安全？HTTPS 有什么弊端？如何改进这种弊端？</li>
+<li>COMMONJS 和 ES6 的模块之间有什么不同</li>
+<li>REM 的使用场景，如何设置 font-size 的值</li>
+<li>HTTP 请求方式有哪些？说一下 GET 和 POST 请求的差别</li>
+<li>Web 安全接触过哪些？XSS/SQL注入/CSRF，每一个都深入的问了出现的场景以及该如何防御？（比如 SQL 注入，会问到需要检验的字符有哪些？XSS 会问到攻击脚本里大概需要写什么样的代码？CSRF 问到 token 应该如何生成，如何传递？）</li>
+<li>HTTP 状态码有哪些？其中 400 和 500 分别什么场景下会出现？301 和 302有什么差别？如果要做 SEO 的话，301 好还是 302 好？</li>
+<li>浏览器中的事件流模型？以及冒泡一般在什么场景下用到（事件委托）？事件委托有什么优点？</li>
+<li>ES6 中的箭头函数的特点？</li>
+<li>Set 结构和 Map 结构？他们之间的区别？</li>
+<li>介绍自己在项目中遇到的比较棘手的问题，以及如何解决他们的？</li>
+</ol>
+<h2 id="腾讯二面"><a href="#腾讯二面" class="headerlink" title="腾讯二面"></a>腾讯二面</h2><ol>
+<li>HTTPS 和 HTTP 有什么差别？</li>
+<li>HTTP2 了解多少？多路复用和 HTTP1.1 的 Keep-Alive 有什么区别？</li>
+<li>浏览器的性能优化有哪些点？哪些操作能够触发浏览器的回流和重绘？回流和重绘的差别是什么？</li>
+<li>状态码有没有了解？304 是做什么用的？HTTP 的缓存过程？哪个头部字段才能导致 304 请求（头部字段优先级）？Expires 和 Cache-Control 的区别是什么？Last-Modified 和 E-Tag 的区别是什么？</li>
+<li>Node 中的事件循环机制</li>
+<li>进程间通信有哪些方式？在 Node 中是如何实现的？</li>
+<li>Node 中是如何管理多进程的？child_process.fork 和 cluster.fork 有什么差别？</li>
+<li>如何进行组件的版本管理？（可以参考jQuery）</li>
+<li>CDN 的原理？</li>
+<li>常用的 node 里面的库？如何拿到当前的环境变量？</li>
+<li>如果 a.com 要迁移到 b.com，如何不修改代码而完成这个替换（不考虑全局替换）</li>
+<li>如何理解模块化？以及自己平时的模块化实践</li>
+<li>证书是用来干嘛的？有没有被窃取的可能性？</li>
+<li>平时自己用的代理工具是什么？如何配置使其能够看到 HTTPS 请求？</li>
+<li>Cookie 和 Session 的区别？Session 必须要靠 Cookie 实现吗？如果不是，还有什么方式可以实现？document.cookie 总是能访问到的吗？</li>
+<li>如果有 a,b,c 三个 tab 页面，共用同一个 body，很快的依次点击，最终展示的可能是 a 页面。如何解决这个问题？</li>
+</ol>
+<h2 id="腾讯三面"><a href="#腾讯三面" class="headerlink" title="腾讯三面"></a>腾讯三面</h2><p>　　整体的问题还是以项目为背景，这里列出一些跟项目关系不太大的问题。</p>
+<ol>
+<li>Node 和 Java 的区别？</li>
+<li>Node 中的多进程是如何实现的？如何监控 Node 中的异常？（pm2）pm2 是如何进行异常监控的？</li>
+<li>Vue 的渲染过程是怎么样的？</li>
+<li>Vue 和 React 的区别？</li>
+<li>Node 为什么是异步的？（事件循环）说一下事件循环的过程？</li>
+</ol>
+<h2 id="面试总结"><a href="#面试总结" class="headerlink" title="面试总结"></a>面试总结</h2><p>　　刚过去的三轮面试中，一面主要是基础面试，二面主要是基础 + 实践面试，三面主要是项目面试和其它软实力。在跟面试官对话的过程中，自己也学到了很多东西。以下是一些自己得出的感想：</p>
+<ul>
+<li>基础知识。其实在校招面试的过程中，主要还是以考验基础知识为主，但是基础并不是死记硬背出来的，而是要学会变通，举一反三。不能够应用到实践中的基础知识不是好的基础知识。</li>
+<li>实践经历。很多时候，可能从理论到自己真正掌握的知识之间的距离就是实践。很多时候，实践能够给你带来底气，当面试官问你问题的时候，你能够更加笃定的回答。</li>
+<li>技术深度。往往深度的东西是我们平时很难企及到的地方，但是如果你充满好奇心，想要理解技术原理，不妨去看看源码，仔细思考行为背后的本质，抓住精髓，以后实践的过程中加以运用，可以到达另一层境界。</li>
+<li>技术热情。热情能够从某个角度反映出你是否愿意花出更多时间来在这个领域深入，越是有热情的人，越有前途。</li>
+</ul>
+<p>　　哈，上面的四点从上到下的难度其实是越来越大的，希望能与广大的秋招生共勉。</p>
+<h2 id="最后"><a href="#最后" class="headerlink" title="最后"></a>最后</h2><p>　　腾讯的面试从前到后主要是从基础到实践再到软实力，是有一条非常清晰的路线的，能够考察到一个面试者的方方面面，是一次非常全面的面试体验。<br>　　最后想要提的是，三轮面试的面试官人都非常的 nice。与其说是面试，不如说是我在向面试官不断的探讨和请教。在有些问题我的思路可能跑偏或者没什么思路的时候，也都会给我一些引导，打破自己的思维限制，使我可以思考的更加深入。</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/08/02/浏览器和Node中不同的Event-Loop/" rel="next" title="浏览器和Node中不同的Event Loop">
+                <i class="fa fa-chevron-left"></i> 浏览器和Node中不同的Event Loop
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/08/20/记-2018秋招百度面试经历/" rel="prev" title="记-2018秋招百度面试经历（已完结）">
+                记-2018秋招百度面试经历（已完结） <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Author</p>
+              <p class="site-description motion-element" itemprop="description">Talk is cheap, show me the code.</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">25</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/zhuyali" title="GitHub &rarr; https://github.com/zhuyali" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#腾讯一面"><span class="nav-number">1.</span> <span class="nav-text">腾讯一面</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#腾讯二面"><span class="nav-number">2.</span> <span class="nav-text">腾讯二面</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#腾讯三面"><span class="nav-number">3.</span> <span class="nav-text">腾讯三面</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#面试总结"><span class="nav-number">4.</span> <span class="nav-text">面试总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#最后"><span class="nav-number">5.</span> <span class="nav-text">最后</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Author</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v7.0.0</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="Total Visitors">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="Total Views">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=7.0.0"></script>
+
+  <script src="/js/src/motion.js?v=7.0.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/schemes/muse.js?v=7.0.0"></script>
+
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=7.0.0"></script>
+<script src="/js/src/post-details.js?v=7.0.0"></script>
+
+
+
+  
+
+
+  <script src="/js/src/bootstrap.js?v=7.0.0"></script>
+
+
+  
+  
+  
+  <script id="dsq-count-scr" src="https://zhuyali.disqus.com/count.js" async></script>
+
+
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://zhuyali.github.io/2018/08/15/记-2018秋招腾讯面试经历/";
+    this.page.identifier = "2018/08/15/记-2018秋招腾讯面试经历/";
+    this.page.title = '记-2018秋招腾讯面试经历（已完结）';
+    };
+  function loadComments() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://zhuyali.disqus.com/embed.js';
+    s.setAttribute('data-timestamp', '' + +new Date());
+    (d.head || d.body).appendChild(s);
+  }
+  
+    loadComments();
+  
+</script>
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

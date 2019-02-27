@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222"/>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2"/>
+
+<link rel="stylesheet" href="/css/main.css?v=7.0.0"/>
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.0.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.0.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '7.0.0',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false,"dimmer":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="以不变应万变的 XMLHttpRequest　　在这个横行使用 Ajax 的时代，很多人对待 XMLHttpRequest(简称 XHR)的态度都是：“哦，我知道这个东西”，“那你来使用它简单实现一下 Ajax 吧”，“emmm…”，不了了之。好，废话不多说，下面我们一起揭开 XHR 并不神秘的面纱吧。　　XHR 为向服务端发送请求和解析服务端响应提供了流畅的接口，能够以异步方式从服务端取得更多信">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JavaScript高级程序回顾(二)——请求资源的那些事儿">
+<meta property="og:url" content="https://zhuyali.github.io/2018/01/09/JavaScript高级程序回顾-二-——请求资源的那些事儿/index.html">
+<meta property="og:site_name" content="一只大阿瓜の博客">
+<meta property="og:description" content="以不变应万变的 XMLHttpRequest　　在这个横行使用 Ajax 的时代，很多人对待 XMLHttpRequest(简称 XHR)的态度都是：“哦，我知道这个东西”，“那你来使用它简单实现一下 Ajax 吧”，“emmm…”，不了了之。好，废话不多说，下面我们一起揭开 XHR 并不神秘的面纱吧。　　XHR 为向服务端发送请求和解析服务端响应提供了流畅的接口，能够以异步方式从服务端取得更多信">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2019-02-27T08:08:18.710Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="JavaScript高级程序回顾(二)——请求资源的那些事儿">
+<meta name="twitter:description" content="以不变应万变的 XMLHttpRequest　　在这个横行使用 Ajax 的时代，很多人对待 XMLHttpRequest(简称 XHR)的态度都是：“哦，我知道这个东西”，“那你来使用它简单实现一下 Ajax 吧”，“emmm…”，不了了之。好，废话不多说，下面我们一起揭开 XHR 并不神秘的面纱吧。　　XHR 为向服务端发送请求和解析服务端响应提供了流畅的接口，能够以异步方式从服务端取得更多信">
+
+
+
+
+
+
+  <link rel="canonical" href="https://zhuyali.github.io/2018/01/09/JavaScript高级程序回顾-二-——请求资源的那些事儿/"/>
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>JavaScript高级程序回顾(二)——请求资源的那些事儿 | 一只大阿瓜の博客</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">一只大阿瓜の博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br/>Home</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br/>Archives</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br/>About</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zhuyali.github.io/2018/01/09/JavaScript高级程序回顾-二-——请求资源的那些事儿/"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Author"/>
+      <meta itemprop="description" content="Talk is cheap, show me the code."/>
+      <meta itemprop="image" content="/images/avatar.gif"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一只大阿瓜の博客"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">JavaScript高级程序回顾(二)——请求资源的那些事儿
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Post created:2018-01-09 11:54:15" itemprop="dateCreated datePublished" datetime="2018-01-09T11:54:15+08:00">2018-01-09</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Post modified:2019-02-27 16:08:18" itemprop="dateModified" datetime="2019-02-27T16:08:18+08:00">2019-02-27</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+              
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">Comments:</span>
+                <a href="/2018/01/09/JavaScript高级程序回顾-二-——请求资源的那些事儿/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/01/09/JavaScript高级程序回顾-二-——请求资源的那些事儿/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             Views: 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="以不变应万变的-XMLHttpRequest"><a href="#以不变应万变的-XMLHttpRequest" class="headerlink" title="以不变应万变的 XMLHttpRequest"></a>以不变应万变的 XMLHttpRequest</h3><p>　　在这个横行使用 Ajax 的时代，很多人对待 XMLHttpRequest(简称 XHR)的态度都是：“哦，我知道这个东西”，“那你来使用它简单实现一下 Ajax 吧”，“emmm…”，不了了之。好，废话不多说，下面我们一起揭开 XHR 并不神秘的面纱吧。<br>　　XHR 为向服务端发送请求和解析服务端响应提供了流畅的接口，能够以异步方式从服务端取得更多信息，是当今一系列异步请求的鼻祖。它最初是由微软发明的，后来被各大浏览器原生支持。</p>
+<h4 id="XHR-的基本用法"><a href="#XHR-的基本用法" class="headerlink" title="XHR 的基本用法"></a>XHR 的基本用法</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">var xhr = new XMLHttpRequest();//创建 XHR 对象</span><br><span class="line">xhr.open(&apos;get&apos;, &apos;example.txt&apos;, false);//启动 XHR 请求，此时并没有真正发送请求</span><br><span class="line">xhr.send(null);//发送请求</span><br></pre></td></tr></table></figure>
+<p>　　上面的代码就完成了一个基本的 HTTP 请求，这里白话解释一下上面做了什么：使用 GET 方法，以同步的方式获取“当前页面/example.txt”资源。API 不深入解释，可以参考 <a href="https://developer.mozilla.org/zh-CN/docs/Web/API/XMLHttpRequest" target="_blank" rel="noopener">MDN 相关文档</a>。在我的解释中，不知大家有没有关注到“同步”两个字，我想这是我强调的关键：open 方法的第三个布尔值代表是否已同步的方式获取资源，有同步当然就有异步啦，这是令人激动的地方，所以说 XHR 是异步请求的鼻祖嘛，因为浏览器给我们原生提供了异步请求的方法，后续无论做多少封装，也万变不离其宗。</p>
+<h3 id="Ajax"><a href="#Ajax" class="headerlink" title="Ajax"></a>Ajax</h3><p>　　Ajax 的全称是 Asynchroronous JavaScript + XML(异步的 JavaScript 和 XML)，是一种无需重新加载整个网页的情况下，能够部分更新网页的技术。它基于 XHR，下面原生实现一版阉割版 Ajax ~<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">function ajax(options) &#123;</span><br><span class="line">  options = options || &#123;&#125;;</span><br><span class="line">  options.type = (options.type || &apos;GET&apos;).toUpperCase();</span><br><span class="line">  var params = formatParams(options.data);</span><br><span class="line">  var xhr = new XMLHttpRequest();</span><br><span class="line">  xhr.onreadystatechange = function() &#123;</span><br><span class="line">    if (xhr.readyState === 4 &amp;&amp; xhr.status &gt;= 200 &amp;&amp; xhr.status &lt; 300 || xhr.status === 304) &#123;</span><br><span class="line">      options.success &amp;&amp; options.success(xhr.responseText, xhr.responseXML);</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">      options.fail &amp;&amp; options.fail(status);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;;</span><br><span class="line">  if (options.type === &apos;GET&apos;) &#123;</span><br><span class="line">    xhr.open(&apos;get&apos;, `$&#123;options.url&#125;?$&#123;params&#125;`, true);</span><br><span class="line">    xhr.send(null);</span><br><span class="line">  &#125; else if (options.type === &apos;POST&apos;) &#123;</span><br><span class="line">    xhr.open(&apos;post&apos;, options.url, true);</span><br><span class="line">    xhr.setRequestHeader(&apos;Content-Type&apos;, &apos;application/x-www-form-urlencoded&apos;);//模仿表单提交</span><br><span class="line">    xhr.send(params);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">//格式化参数</span><br><span class="line">function formatParams(data) &#123;</span><br><span class="line">  let result = [];</span><br><span class="line">  for (let key in data) &#123;</span><br><span class="line">    result.push(`$&#123;encodeURIComponent(key)&#125;=$&#123;encodeURIComponent(data[key])&#125;`)</span><br><span class="line">  &#125;</span><br><span class="line">  return result.join(&apos;&amp;&apos;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>　　调用方式为：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">ajax(&#123;</span><br><span class="line">  url: &apos;/test&apos;,</span><br><span class="line">  type: &apos;POST&apos;,</span><br><span class="line">  data: &#123; name: &apos;Julia&apos;, age: 23 &#125;,</span><br><span class="line">  success: function (responseText, responseXML) &#123;</span><br><span class="line">    //此处放成功后执行的代码</span><br><span class="line">  &#125;,</span><br><span class="line">  fail: function (status) &#123;</span><br><span class="line">    //此处放失败后执行的代码</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<h3 id="新兴的-Fetch"><a href="#新兴的-Fetch" class="headerlink" title="新兴的 Fetch"></a>新兴的 Fetch</h3><p>　　在网上看到一句话“Ajax 已死，fetch 永生”，颇有标题党的意思。但是仔细想了想，不无道理。Ajax 过去再怎么辉煌，也离不开“封装”二字，尽管对 XHR 的封装已经做得非常好。而新兴的 fetch 既是浏览器的亲生骨肉，又能提供类似于 Ajax 的实现。所以，Ajax 被替代是指日可待的事情了。不过这里我就不太多赘述关于 fetch 的 API 啦（博主赶紧跑去学习学习…）。</p>
+<h3 id="跨域技术"><a href="#跨域技术" class="headerlink" title="跨域技术"></a>跨域技术</h3><p>　　跨域实在是很让人头疼的一件事，好在现在有不少流行的跨域技术。以我的角度来看，我更愿意把各样的跨域技术分为两类：需要服务端支持的和不需要服务端支持的。为什么这么分类呢？是因为跨域也要分跨谁的域，跨自家公司的其它域的时候，如果能在服务端做点手脚能省不少事；要是想跨别人的域呢，那就只能前端在浏览器里做点手脚啦，而且还不一定能得到自己想要的跨域结果~</p>
+<h4 id="需要服务端支持的跨域"><a href="#需要服务端支持的跨域" class="headerlink" title="需要服务端支持的跨域"></a>需要服务端支持的跨域</h4><ol>
+<li><p>跨域资源共享(CORS)<br>　　CORS 的基本思想是：使用自定义的 HTTP 头部让浏览器与服务端进行沟通，从而决定请求或响应是应该成功，还是应该失败。整个 CORS 通信过程，都是浏览器自动完成，不会让用户感觉到与普通请求有任何差别。<br>　　在使用 CORS 进行跨域时，浏览器会自动在请求头中加入 <code>Origin</code> 字段，指定本次请求来自哪个源(协议 + 域名 + 端口)，服务端会根据这个值来判断是否同意这次跨域请求。如果 <code>Origin</code> 指定的源不在许可范围内，服务端返回正常的 HTTP 回应，但是这次 HTTP 响应头中不包含 <code>Access-Control-Allow-Origin</code>，代表本次跨域请求失败，错误会被 XHR 的 onerror 回调函数捕获；如果 <code>Origin</code> 指定的源在许可范围内，就会在 HTTP 响应头中发现 <code>Access-Control-Allow-Origin</code> 字段，它的值可能是 <code>Origin</code> 传给服务端的值，也有可能是 *(代表公共资源)。<br>　　以上说的 CORS 请求都是阮老师 <a href="http://www.ruanyifeng.com/blog/2016/04/cors.html" target="_blank" rel="noopener">跨域资源共享 CORS 详解</a> 一文中提到的简单请求，复杂请求会在第一次发送跨域请求时多一次 HTTP 请求，但是都是浏览器自动完成的，细节请参阅阮老师的文章。</p>
+</li>
+<li><p>JSONP(JSON with padding)<br>　　使用 JSONP 需要知道一个前提就是，script 标签本身就可以跨域的，将一个跨域请求放到 src 属性中即可。回想一下，你页面里引的 jQuery 源码是不是请求就是百度 CDN 上的资源呀？<br>　　JSONP 是包含在函数调用中的 JSON，例如<code>callback({ &quot;name&quot;: &quot;Julia&quot;})</code>。它由两部分组成：回调函数和数据。回调函数是当响应到来时应该在页面中调用的函数，回调函数的名字一般是在请求中指定的。而数据就是传入回调函数的 JSON 数据。<br>　　这里有一个典型的 JSONP 请求：<code>http://freegeoip.net/json?callback=handleResponse</code>。我们来分析一下上面这句话。首先，这是一个 JSONP 请求，代表这个请求要获取的是包含 JSONP 格式的数据；然后看到请求的格式是在 URL 后面加一些参数，也就是 GET 请求的方式，划重点啦，<em>JSONP 只支持 GET 方式进行请求</em>；再接着看，参数是 <code>callback=handleResponse</code>，语义上来理解的话，代表回调函数是 handleResponse，那么意味着浏览器中肯定存在这个回调函数，并且在要请求的资源里，肯定具有 <code>callback({ &quot;name&quot;: &quot;Julia&quot;})</code> 这种形式以便于调用函数。OK，分析完了这句话，我觉得 JSONP 的道理大家也应该都懂了吧。</p>
+</li>
+</ol>
+<p>　　之所以将 JSONP 也归于需要服务端支持的跨域，与 CORS 的原因有很大差别。JSONP 的关键在于被请求的资源中需要包含 URL 中指定的函数并且调用它，以实现数据的跨域传输。所以，准确来说这并不是需要服务端的支持，而是需要被请求资源的支持。而 CORS 主要是通过头部信息进行跨域，所以毫无疑问需要服务端的支持。</p>
+<h4 id="不需要服务端支持的跨域"><a href="#不需要服务端支持的跨域" class="headerlink" title="不需要服务端支持的跨域"></a>不需要服务端支持的跨域</h4><p>图像 Ping<br>　　与 script 标签类似，浏览器中还有一个标签可以跨域，那就是 img 标签。以我自己举例来说，没有什么可用的 CDN 服务器，可是发一篇文章又想图文并茂，所以往往会在微博上传一些图片，然后获取到图片的 URL 后再把微博删了…好像跑题了，意思就是在我的博客里你看到的好多图片，我用的都是新浪微博的静态图片资源。<br>　　使用该方式进行跨域请求很简单，举例如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">var img = new Image();</span><br><span class="line">img.onload = img.onerror = function() &#123;</span><br><span class="line">  alert(&apos;Done!&apos;);</span><br><span class="line">&#125;;</span><br><span class="line">img.src = &apos;http://www.example.com/test?name=Julia&apos;;</span><br></pre></td></tr></table></figure></p>
+<p>　　从上面这段很短的代码中，我想也是可以得到一些信息的。第一，使用图像 Ping 方式跨域只支持 GET 请求，这是 img 标签所决定的；第二，这是一种与服务端进行简单、单向的跨域通信的一种方式，请求的数据是以查询字符串形式发送的，而响应可以是任意内容，但是很可惜，并不能访问服务端的响应文本(隐含意思就是，你别想通过这个方式获取服务端的啥信息)。</p>
+<h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><p><a href="http://www.ruanyifeng.com/blog/2016/04/cors.html" target="_blank" rel="noopener">跨域资源共享 CORS 详解</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/01/08/HTTP杂烩-一/" rel="next" title="HTTP杂烩(一)">
+                <i class="fa fa-chevron-left"></i> HTTP杂烩(一)
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/01/09/吓唬人的闭包/" rel="prev" title="JavaScript高级程序回顾(三)——吓唬人的闭包">
+                JavaScript高级程序回顾(三)——吓唬人的闭包 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Author</p>
+              <p class="site-description motion-element" itemprop="description">Talk is cheap, show me the code.</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">25</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/zhuyali" title="GitHub &rarr; https://github.com/zhuyali" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#以不变应万变的-XMLHttpRequest"><span class="nav-number">1.</span> <span class="nav-text">以不变应万变的 XMLHttpRequest</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#XHR-的基本用法"><span class="nav-number">1.1.</span> <span class="nav-text">XHR 的基本用法</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Ajax"><span class="nav-number">2.</span> <span class="nav-text">Ajax</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#新兴的-Fetch"><span class="nav-number">3.</span> <span class="nav-text">新兴的 Fetch</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#跨域技术"><span class="nav-number">4.</span> <span class="nav-text">跨域技术</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#需要服务端支持的跨域"><span class="nav-number">4.1.</span> <span class="nav-text">需要服务端支持的跨域</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#不需要服务端支持的跨域"><span class="nav-number">4.2.</span> <span class="nav-text">不需要服务端支持的跨域</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考文献"><span class="nav-number">5.</span> <span class="nav-text">参考文献</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Author</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v7.0.0</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="Total Visitors">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="Total Views">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=7.0.0"></script>
+
+  <script src="/js/src/motion.js?v=7.0.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/schemes/muse.js?v=7.0.0"></script>
+
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=7.0.0"></script>
+<script src="/js/src/post-details.js?v=7.0.0"></script>
+
+
+
+  
+
+
+  <script src="/js/src/bootstrap.js?v=7.0.0"></script>
+
+
+  
+  
+  
+  <script id="dsq-count-scr" src="https://zhuyali.disqus.com/count.js" async></script>
+
+
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://zhuyali.github.io/2018/01/09/JavaScript高级程序回顾-二-——请求资源的那些事儿/";
+    this.page.identifier = "2018/01/09/JavaScript高级程序回顾-二-——请求资源的那些事儿/";
+    this.page.title = 'JavaScript高级程序回顾(二)——请求资源的那些事儿';
+    };
+  function loadComments() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://zhuyali.disqus.com/embed.js';
+    s.setAttribute('data-timestamp', '' + +new Date());
+    (d.head || d.body).appendChild(s);
+  }
+  
+    loadComments();
+  
+</script>
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

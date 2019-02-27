@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222"/>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2"/>
+
+<link rel="stylesheet" href="/css/main.css?v=7.0.0"/>
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.0.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.0.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.0.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '7.0.0',
+    sidebar: {"position":"left","display":"always","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false,"dimmer":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="对象的构造字面量方式　　使用对象字面量形式是一种常见的构造对象的方式，不再多说。如下：123456789101112var person = &amp;#123;  name: &amp;apos;Julia&amp;apos;,  age: 23,  address: &amp;#123;    prov: &amp;apos;Zhejiang&amp;apos;,    city: &amp;apos;hangzhou&amp;apos;  &amp;#125;,">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JavaScript高级程序回顾(五)——面向对象的JS">
+<meta property="og:url" content="https://zhuyali.github.io/2018/01/12/面向对象的JS/index.html">
+<meta property="og:site_name" content="一只大阿瓜の博客">
+<meta property="og:description" content="对象的构造字面量方式　　使用对象字面量形式是一种常见的构造对象的方式，不再多说。如下：123456789101112var person = &amp;#123;  name: &amp;apos;Julia&amp;apos;,  age: 23,  address: &amp;#123;    prov: &amp;apos;Zhejiang&amp;apos;,    city: &amp;apos;hangzhou&amp;apos;  &amp;#125;,">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://wx4.sinaimg.cn/mw690/79b5b053gy1fne3p7cpj5j20el06rjrz.jpg">
+<meta property="og:image" content="https://wx4.sinaimg.cn/mw690/79b5b053gy1fne3p7505lj20ef06xgm4.jpg">
+<meta property="og:image" content="https://wx3.sinaimg.cn/mw690/79b5b053gy1fne3p7bzh9j20eq06v3yw.jpg">
+<meta property="og:image" content="https://wx2.sinaimg.cn/mw690/79b5b053gy1fne3v9tn5sj20la053q3p.jpg">
+<meta property="og:updated_time" content="2019-02-27T08:08:18.717Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="JavaScript高级程序回顾(五)——面向对象的JS">
+<meta name="twitter:description" content="对象的构造字面量方式　　使用对象字面量形式是一种常见的构造对象的方式，不再多说。如下：123456789101112var person = &amp;#123;  name: &amp;apos;Julia&amp;apos;,  age: 23,  address: &amp;#123;    prov: &amp;apos;Zhejiang&amp;apos;,    city: &amp;apos;hangzhou&amp;apos;  &amp;#125;,">
+<meta name="twitter:image" content="https://wx4.sinaimg.cn/mw690/79b5b053gy1fne3p7cpj5j20el06rjrz.jpg">
+
+
+
+
+
+
+  <link rel="canonical" href="https://zhuyali.github.io/2018/01/12/面向对象的JS/"/>
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>JavaScript高级程序回顾(五)——面向对象的JS | 一只大阿瓜の博客</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">一只大阿瓜の博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br/>Home</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br/>Archives</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br/>About</a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://zhuyali.github.io/2018/01/12/面向对象的JS/"/>
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Author"/>
+      <meta itemprop="description" content="Talk is cheap, show me the code."/>
+      <meta itemprop="image" content="/images/avatar.gif"/>
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="一只大阿瓜の博客"/>
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">JavaScript高级程序回顾(五)——面向对象的JS
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Post created:2018-01-12 18:03:24" itemprop="dateCreated datePublished" datetime="2018-01-12T18:03:24+08:00">2018-01-12</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">Edited on</span>
+                
+                <time title="Post modified:2019-02-27 16:08:18" itemprop="dateModified" datetime="2019-02-27T16:08:18+08:00">2019-02-27</time>
+              
+            
+          </span>
+
+          
+
+          
+            
+            
+              
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+            
+                <span class="post-meta-item-text">Comments:</span>
+                <a href="/2018/01/12/面向对象的JS/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count disqus-comment-count" data-disqus-identifier="2018/01/12/面向对象的JS/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon"
+            >
+            <i class="fa fa-eye"></i>
+             Views: 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="对象的构造"><a href="#对象的构造" class="headerlink" title="对象的构造"></a>对象的构造</h3><h4 id="字面量方式"><a href="#字面量方式" class="headerlink" title="字面量方式"></a>字面量方式</h4><p>　　使用对象字面量形式是一种常见的构造对象的方式，不再多说。如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">var person = &#123;</span><br><span class="line">  name: &apos;Julia&apos;,</span><br><span class="line">  age: 23,</span><br><span class="line">  address: &#123;</span><br><span class="line">    prov: &apos;Zhejiang&apos;,</span><br><span class="line">    city: &apos;hangzhou&apos;</span><br><span class="line">  &#125;,</span><br><span class="line">  &apos;test attr&apos;: 1, //当属性名不是有效标识符时，需要给属性名加上&apos;&apos;</span><br><span class="line">  sayHi: function(name) &#123;</span><br><span class="line">    console.log(`Hi, $&#123;name&#125;, I&apos;m $&#123;this.name&#125;`);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<h4 id="构造器方式"><a href="#构造器方式" class="headerlink" title="构造器方式"></a>构造器方式</h4><p>　　类似于 Java 中使用构造器进行对象构造的形式，JS 中也可以用构造器的方式来构造对象。如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">function Person(name, age, address, test) &#123;</span><br><span class="line">  this.name = name;</span><br><span class="line">  this.age = age;</span><br><span class="line">  this.address = address;</span><br><span class="line">  this[&apos;test attr&apos;] = test;</span><br><span class="line">&#125;</span><br><span class="line">Person.prototype.sayHi = function(name) &#123;</span><br><span class="line">  console.log(`Hi $&#123;name&#125;, I&apos;m $&#123;this.name&#125;`);</span><br><span class="line">&#125;</span><br><span class="line">var person = new Person(&apos;Julia&apos;, 23, &#123; prov: &apos;Zhejiang&apos;, city: &apos;hangzhou&apos; &#125;, 1);</span><br></pre></td></tr></table></figure></p>
+<p>　　这是常用的一种构造对象的方式，它组合了构造器的方式和原型的方式。构造器主要用于构造对象自身有的属性，比如本例中的姓名、年龄等；原型方式主要用于构造对象之间公有的特征，比如 sayHi 方法。最后，通过 new 操作符构造出了 Person，以这种方式调用构造函数实际会经历如下四个步骤：</p>
+<ol>
+<li>创建一个新对象</li>
+<li>将构造函数的作用域赋给新对象(因此 this 就指向了这个新对象)</li>
+<li>执行构造函数中的代码(为这个新对象添加属性)</li>
+<li>返回新对象</li>
+</ol>
+<h4 id="Object-create-方法"><a href="#Object-create-方法" class="headerlink" title="Object.create 方法"></a>Object.create 方法</h4><p>　　使用这种方法可以为你要创建的对象指定其原型，而不用定义一个构造函数。如下：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">var person = &#123;</span><br><span class="line">  name: &apos;Julia&apos;,</span><br><span class="line">  age: 23,</span><br><span class="line">  address: &#123;</span><br><span class="line">    prov: &apos;Zhejiang&apos;,</span><br><span class="line">    city: &apos;hangzhou&apos;</span><br><span class="line">  &#125;,</span><br><span class="line">  &apos;test attr&apos;: 1, //当属性名不是有效标识符时，需要给属性名加上&apos;&apos;</span><br><span class="line">  sayHi: function(name) &#123;</span><br><span class="line">    console.log(`Hi, $&#123;name&#125;, I&apos;m $&#123;this.name&#125;`);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br><span class="line">var person1 = Object.create(person);</span><br></pre></td></tr></table></figure></p>
+<p>　　以上代码构造了一个 person1 对象，它是以 person 对象作为其原型的。换言之，如果我使用 Object.create(person) 构造了 person2，person3…很多个对象，它们都会拥有 person 对象上的所有属性和方法。</p>
+<h3 id="原型与原型属性"><a href="#原型与原型属性" class="headerlink" title="原型与原型属性"></a>原型与原型属性</h3><p>　　原型指的是 prototype，原型属性指的是 __proto__。偶然看到过的一句话，我觉得可以深刻地解释它们分别是什么：prototype 代表胚胎，__proto__ 代表父亲。这句话很值得挖掘。先说 prototype，它代表的是胚胎，意味着它是可以用来产生新的对象的，可以不基于已有对象，并且用来产生新对象的方法是通过使用函数，所以 prototype 属性是函数才有的(这是个人看法，这样理解会变得十分简单)。而所有的对象都有父亲，所以每个对象都有 __proto__ 属性。为了更清楚的理解这两个属性，这里结合以上三种构造对象的方式来进行解释。</p>
+<h4 id="字面量方式-1"><a href="#字面量方式-1" class="headerlink" title="字面量方式"></a>字面量方式</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">var a = &#123;&#125;;</span><br></pre></td></tr></table></figure>
+<p><img src="//wx4.sinaimg.cn/mw690/79b5b053gy1fne3p7cpj5j20el06rjrz.jpg" alt=""></p>
+<h4 id="构造器方式-1"><a href="#构造器方式-1" class="headerlink" title="构造器方式"></a>构造器方式</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">var A = function() &#123;&#125;;</span><br><span class="line">var a = new A();</span><br></pre></td></tr></table></figure>
+<p><img src="//wx4.sinaimg.cn/mw690/79b5b053gy1fne3p7505lj20ef06xgm4.jpg" alt=""></p>
+<h4 id="Object-create-方法-1"><a href="#Object-create-方法-1" class="headerlink" title="Object.create 方法"></a>Object.create 方法</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">var a1 = &#123;&#125;;</span><br><span class="line">var a2 = Object.create(a1);</span><br></pre></td></tr></table></figure>
+<p><img src="//wx3.sinaimg.cn/mw690/79b5b053gy1fne3p7bzh9j20eq06v3yw.jpg" alt=""></p>
+<h3 id="原型链"><a href="#原型链" class="headerlink" title="原型链"></a>原型链</h3><p>　　原型链是 JS 中实现继承的主要方式。原型链这个词中的原型二字，指的实际上是 __proto__ 属性而非 prototype 属性。可以这么理解，JS 中万物皆对象，而 __proto__ 是所有对象都有的属性，prototype 只是函数才有的属性，所以 prototype 是无法形成链条的，而 __proto__ 是可以做到的。下面一张图，可以清楚地展示出原型链。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">var A = function() &#123;&#125;;</span><br><span class="line">var a = new A();</span><br></pre></td></tr></table></figure></p>
+<p><img src="https://wx2.sinaimg.cn/mw690/79b5b053gy1fne3v9tn5sj20la053q3p.jpg" alt=""><br>　　从这张图我们可以看出一条由 __proto__ 链起来的链条，这就是原型链。在 JS 中，Object 是所有对象的基类，这一点我们也可以从图中观察到，null 总是位于原型链的顶端，Object 仅次于 null。当 JS 引擎查找属性时，会先查找对象本身是否存在该属性，如果不存在，会在原型链上查找，直至回溯到原型链的顶端。</p>
+<h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><p><a href="http://www.cnblogs.com/shuiyi/p/5305435.html" target="_blank" rel="noopener">三张图搞懂JavaScript的原型对象与原型链</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/01/11/飘忽不定的-this/" rel="next" title="JavaScript高级程序回顾(四)——飘忽不定的 this?">
+                <i class="fa fa-chevron-left"></i> JavaScript高级程序回顾(四)——飘忽不定的 this?
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/01/15/高级技巧/" rel="prev" title="JavaScript高级程序回顾(六)——高级技巧">
+                JavaScript高级程序回顾(六)——高级技巧 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+    <div class="comments" id="comments">
+      <div id="disqus_thread">
+        <noscript>Please enable JavaScript to view the comments powered by Disqus.</noscript>
+      </div>
+    </div>
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Author</p>
+              <p class="site-description motion-element" itemprop="description">Talk is cheap, show me the code.</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">25</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+            </nav>
+          
+
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/zhuyali" title="GitHub &rarr; https://github.com/zhuyali" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#对象的构造"><span class="nav-number">1.</span> <span class="nav-text">对象的构造</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#字面量方式"><span class="nav-number">1.1.</span> <span class="nav-text">字面量方式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#构造器方式"><span class="nav-number">1.2.</span> <span class="nav-text">构造器方式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Object-create-方法"><span class="nav-number">1.3.</span> <span class="nav-text">Object.create 方法</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#原型与原型属性"><span class="nav-number">2.</span> <span class="nav-text">原型与原型属性</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#字面量方式-1"><span class="nav-number">2.1.</span> <span class="nav-text">字面量方式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#构造器方式-1"><span class="nav-number">2.2.</span> <span class="nav-text">构造器方式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Object-create-方法-1"><span class="nav-number">2.3.</span> <span class="nav-text">Object.create 方法</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#原型链"><span class="nav-number">3.</span> <span class="nav-text">原型链</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考资料"><span class="nav-number">4.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Author</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">Powered by <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Mist</a> v7.0.0</div>
+
+
+
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="Total Visitors">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="Total Views">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=7.0.0"></script>
+
+  <script src="/js/src/motion.js?v=7.0.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/schemes/muse.js?v=7.0.0"></script>
+
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=7.0.0"></script>
+<script src="/js/src/post-details.js?v=7.0.0"></script>
+
+
+
+  
+
+
+  <script src="/js/src/bootstrap.js?v=7.0.0"></script>
+
+
+  
+  
+  
+  <script id="dsq-count-scr" src="https://zhuyali.disqus.com/count.js" async></script>
+
+
+<script>
+  var disqus_config = function() {
+    this.page.url = "https://zhuyali.github.io/2018/01/12/面向对象的JS/";
+    this.page.identifier = "2018/01/12/面向对象的JS/";
+    this.page.title = 'JavaScript高级程序回顾(五)——面向对象的JS';
+    };
+  function loadComments() {
+    var d = document, s = d.createElement('script');
+    s.src = 'https://zhuyali.disqus.com/embed.js';
+    s.setAttribute('data-timestamp', '' + +new Date());
+    (d.head || d.body).appendChild(s);
+  }
+  
+    loadComments();
+  
+</script>
+
+
+
+
+
+  
+
+
+  
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
