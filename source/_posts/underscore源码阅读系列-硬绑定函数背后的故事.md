@@ -7,7 +7,7 @@ tags:
 ### 硬绑定函数
 
 #### 绑定丢失问题
-　　在之前的文章[飘忽不定的 this](http://zhuyali.com.cn/2018/01/11/%E9%A3%98%E5%BF%BD%E4%B8%8D%E5%AE%9A%E7%9A%84-this/)中详细介绍过 this 的绑定规则，并且在*一个栗子*部分分析了绑定丢失的问题，这里重新回顾一下。先看以下的代码：
+　　在之前的文章[飘忽不定的 this](http://zhuyali.github.io/2018/01/11/%E9%A3%98%E5%BF%BD%E4%B8%8D%E5%AE%9A%E7%9A%84-this/)中详细介绍过 this 的绑定规则，并且在*一个栗子*部分分析了绑定丢失的问题，这里重新回顾一下。先看以下的代码：
 ```
 function foo() {
     console.log(this.a);
@@ -113,7 +113,7 @@ var executeBound = function(sourceFunc, boundFunc, context, callingContext, args
 　　普通调用下 !(callingContext instanceof boundFunc) 条件永远成立，所以会直接进入分支，返回 sourceFunc.apply(context, args)，这里会绑定 sourceFunc 的上下文到 context 并执行 sourceFunc(args[0], args[1]...)。
 
 #### new 调用
-　　new 调用会创建一个 bound 的实例，并且把 this 绑定到这个实例上，此时 !(callingContext instanceof boundFunc) 条件不成立，会继续向下执行，构造一个原始函数的实例。因为这里其实是在模仿真实的 new 过程，不妨先去看看之前我写的一篇文章[面向对象的JS](http://zhuyali.com.cn/2018/01/12/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E7%9A%84JS/)中构造器方式构造对象的部分。首先会创建一个 sourceFunc 的实例 self，这里的 baseCreate 等价于 Object.create(sourceFunc.prototype)，创建出的实例拥有 sourceFunc.prototype 上的所有属性和方法；然后接下来绑定 sourceFunc 的 this 到创建出的实例上并调用 sourceFunc 得到 result；这个得到的 result 完全取决于 sourceFunc 的返回值，可能是任何类型，但是当且仅当在 result 是个对象的时候返回 result，否则返回的是创建出的那个实例。
+　　new 调用会创建一个 bound 的实例，并且把 this 绑定到这个实例上，此时 !(callingContext instanceof boundFunc) 条件不成立，会继续向下执行，构造一个原始函数的实例。因为这里其实是在模仿真实的 new 过程，不妨先去看看之前我写的一篇文章[面向对象的JS](http://zhuyali.github.io/2018/01/12/%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E7%9A%84JS/)中构造器方式构造对象的部分。首先会创建一个 sourceFunc 的实例 self，这里的 baseCreate 等价于 Object.create(sourceFunc.prototype)，创建出的实例拥有 sourceFunc.prototype 上的所有属性和方法；然后接下来绑定 sourceFunc 的 this 到创建出的实例上并调用 sourceFunc 得到 result；这个得到的 result 完全取决于 sourceFunc 的返回值，可能是任何类型，但是当且仅当在 result 是个对象的时候返回 result，否则返回的是创建出的那个实例。
 
 ### 参考资料
 你不知道的JavaScript（上卷）
