@@ -9,7 +9,6 @@ html, body { height: 100%; }
 
 .container {
   position: relative;
-  min-height: 100%;
 }
 
 
@@ -18,29 +17,46 @@ html, body { height: 100%; }
 .header-inner {
   margin: 0 auto;
   padding: 100px 0 70px;
-  width: $content-desktop-large;
+  width: $content-desktop;
+
+  +desktop-large() {
+    .container & { width: $content-desktop-large; }
+  }
+  +desktop-largest() {
+    .container & { width: $content-desktop-largest; }
+  }
 }
+
 
 // Main Section
 // --------------------------------------------------
-.main { padding-bottom: $footer-height + $gap-between-main-and-footer; }
 .main-inner {
   margin: 0 auto;
-  width: $content-desktop-large;
+  width: $content-desktop;
+
+  +desktop-large() {
+    .container & { width: $content-desktop-large; }
+  }
+  +desktop-largest() {
+    .container & { width: $content-desktop-largest; }
+  }
 }
 
 
 // Footer Section
 // --------------------------------------------------
 .footer {
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 100%;
-  min-height: $footer-height;
+  padding: 20px 0;
 }
 .footer-inner {
   box-sizing: border-box;
-  margin: 20px auto;
-  width: $content-desktop-large;
+  margin: 0px auto;
+  width: $content-desktop;
+
+  +desktop-large() {
+    .container & { width: $content-desktop-large; }
+  }
+  +desktop-largest() {
+    .container & { width: $content-desktop-largest; }
+  }
 }
